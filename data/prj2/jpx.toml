@@ -1,0 +1,7 @@
+[pack]
+name = "prj2"
+version = "0.1.0"
+authors = ["you@example.com"]
+type = "lib"
+
+[deps]

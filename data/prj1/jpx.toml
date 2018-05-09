@@ -1,0 +1,8 @@
+[pack]
+name = "prj1"
+version = "0.1.0"
+authors = ["you@example.com"]
+type = "lib"
+
+[deps]
+prj2 = { path = "../prj2" }
