@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * TODO: Document this
  */
-public class Dependency {
+public final class Dependency {
 
     public final String name;
     public final Version version;

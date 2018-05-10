@@ -4,6 +4,7 @@ import org.jpx.util.Types;
 import org.jpx.version.Version;
 
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -13,12 +14,12 @@ public final class Dep {
 
     public final String name;
     public final Version version;
-    public final String path;
+    public final Map<String, Object> values;
 
-    public Dep(String name, Version version, String path) {
+    public Dep(String name, Version version, Map<String, Object> values) {
         this.name = name;
         this.version = version;
-        this.path = path;
+        this.values = values;
     }
 
     @Override
@@ -26,31 +27,23 @@ public final class Dep {
         final StringBuilder sb = new StringBuilder("Dep{");
         sb.append("name='").append(name).append('\'');
         sb.append(", version=").append(version);
-        sb.append(", path='").append(path).append('\'');
+        sb.append(", values='").append(values).append('\'');
         sb.append('}');
         return sb.toString();
     }
-
 
     static Dep parse(Map.Entry<String, Object> entry) {
         try {
             Object value = entry.getValue();
             String name = entry.getKey();
-            String path = null;
+            Map<String, Object> values = Collections.emptyMap();
             Version version = null;
             if (value instanceof Map) {
-                Map<String, Object> valueMap = Types.castToMap(value, String.class, Object.class);
-                for (Map.Entry<String, Object> verEntry : valueMap.entrySet()) {
-                    switch (verEntry.getKey()) {
-                        case "path":
-                            path = Types.safeCast(verEntry.getValue(), String.class);
-                            break;
-                    }
-                }
+                values = Types.castToMap(value, String.class, Object.class);
             } else {
                 version = new Version(Types.safeCast(entry.getValue(), String.class));
             }
-            return new Dep(name, version, path);
+            return new Dep(name, version, values);
         } catch (ParseException e) {
             throw new ManifestException(e);
         }

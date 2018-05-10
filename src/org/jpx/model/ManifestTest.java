@@ -17,9 +17,5 @@ public class ManifestTest {
     public void testParse() {
         Manifest manifest = Manifest.readFrom(Paths.get("./data/prj1/jpx.toml"));
         System.out.println(manifest);
-        Dependency dependency = Resolver.doResolve(manifest);
-
-        System.out.println("==deps==");
-        System.out.println(dependency);
     }
 }

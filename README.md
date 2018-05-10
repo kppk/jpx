@@ -39,8 +39,15 @@ Couple of main ideas:
     
     
     
-    
-    
+MVP scenario:
+
+- create new binary project: `jpx new hello-world-1 --bin`    
+- create another library project: `jps new hello-world-2 --lib`
+- change dir to first project: `cd hello-world-1`
+- put dependency on the library project: `echo '[deps]\nhello-world-2 = { path = \"../new hello-world-2\" }' >> jpx.toml`
+- build binary: `jpx pack`
+
+expectation: dependent library is compiled to jar, static library `./bin/hello-world-1` is created      
     
     
     

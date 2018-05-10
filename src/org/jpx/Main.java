@@ -2,7 +2,7 @@ package org.jpx;
 
 import org.jpx.cli.App;
 import org.jpx.cli.StringFlag;
-import org.jpx.cmd.Project;
+import org.jpx.cmd.Setup;
 
 public class Main {
 
@@ -19,8 +19,8 @@ public class Main {
         App.builder()
                 .setName("jpx")
                 .setUsage("Java Packs manager")
-                .addCommand(Project.CMD_NEW)
-                .addCommand(Project.CMD_INIT)
+                .addCommand(Setup.CMD_NEW)
+                .addCommand(Setup.CMD_INIT)
                 .addFlag(StringFlag.builder()
                         .setName("verbose")
                         .setShortName("v")

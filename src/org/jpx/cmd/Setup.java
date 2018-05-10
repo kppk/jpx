@@ -10,9 +10,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * TODO: Document this
+ * Following cli commands are implemented here:
+ * <ul>
+ * <li>new</li>
+ * <li>init</li>
+ * </ul>
  */
-public class Project {
+public final class Setup {
 
     private static final StringFlag FLAG_NAME = StringFlag.builder()
             .setName("name")
@@ -36,7 +40,7 @@ public class Project {
             .setExecutor(ctx -> initProject(Paths.get("."), null))
             .build();
 
-    public static void newProject(String dir, String name) {
+    private static void newProject(String dir, String name) {
         try {
             Path dirPath = Paths.get(dir);
             if (Files.exists(dirPath)) {
@@ -49,7 +53,7 @@ public class Project {
         }
     }
 
-    public static void initProject(Path dir, String name) {
+    private static void initProject(Path dir, String name) {
         writeToFile(dir.resolve(Manifest.NAME), "" +
                 "[pack]\n" +
                 "name = \"hello_world\" # the name of the package\n" +
@@ -62,6 +66,16 @@ public class Project {
                 "[deps]\n" +
                 "dep1=\"1.0.0\"");
         System.out.println("New project initialized in " + dir);
+    }
+
+    private static String manifestHead(String name) {
+        return String.join("\n",
+                "[pack]",
+                "name = \"" + name + "\"",
+                "version = \"0.1.0\"",
+                "authors = [\"you@example.com\"]",
+                ""
+        );
     }
 
     private static void writeToFile(Path file, String content) {

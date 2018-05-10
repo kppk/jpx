@@ -3,29 +3,27 @@ package org.jpx.dep;
 import org.jpx.model.Dep;
 import org.jpx.model.Manifest;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TODO: Document this
  */
 public interface Resolver {
 
-    Manifest resolveManifest(Manifest parent, Dep dep);
+    List<Resolver> RESOLVERS = Collections.unmodifiableList(Arrays.asList(
+            PathResolver.INSTANCE
+    ));
 
-    static Dependency doResolve(Manifest mf) {
-        List<Dependency> dependencies = mf.deps.stream()
-                .map(dep -> resolver(dep).resolveManifest(mf, dep))
-                .map(m -> doResolve(m))
-                .collect(Collectors.toList());
-        return new Dependency(mf.pack.name, mf.pack.version, dependencies);
-    }
+    Manifest resolve(Manifest parent, Dep dep);
 
+    boolean canResolve(Dep dep);
 
-    static Resolver resolver(Dep dep) {
-        if (dep.path != null) {
-            return new PathResolver();
-        }
-        throw new IllegalArgumentException("Don't know which resolver to use");
+    static Resolver thatResolves(Dep dep) {
+        return RESOLVERS.stream()
+                .filter(resolver -> resolver.canResolve(dep))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Don't know which resolver to use"));
     }
 }
