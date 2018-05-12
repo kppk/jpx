@@ -12,14 +12,38 @@ import java.util.Map;
  */
 public final class Pack {
 
+    public enum Type {
+        LIBRARY("lib"),
+        BINARY("bin");
+
+
+        private final String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        static Type ofName(String name) {
+            for (Type type : Type.values()) {
+                if (type.name.equals(name)) {
+                    return type;
+                }
+            }
+            return null;
+        }
+
+    }
+
     public final String name;
     public final Version version;
     public final List<String> authors;
+    public final Type type;
 
-    private Pack(String name, Version version, List<String> authors) {
+    private Pack(String name, Version version, List<String> authors, Type type) {
         this.name = name;
         this.version = version;
         this.authors = authors;
+        this.type = type;
     }
 
     @Override
@@ -36,6 +60,7 @@ public final class Pack {
         String name = null;
         Version version = null;
         List<String> authors = null;
+        Type type = null;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             switch (entry.getKey()) {
                 case "name":
@@ -52,9 +77,17 @@ public final class Pack {
                 case "authors":
                     authors = Types.safeCast(entry.getValue(), List.class);
                     break;
+                case "type":
+                    String typeString = Types.safeCast(entry.getValue(), String.class);
+                    type = Type.ofName(typeString);
+                    if (type == null) {
+                        throw new ManifestException("Invalid 'type' value");
+                    }
+                    break;
+
             }
         }
-        return new Pack(name, version, authors);
+        return new Pack(name, version, authors, type);
     }
 
 }

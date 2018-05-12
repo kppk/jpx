@@ -106,6 +106,9 @@ public final class App {
             if (arguments.hasNext() && !Flag.isFlag(arguments.peek())) {
                 contextBuilder.addValue(flag.get(), arguments.next());
                 return true;
+            } else if (flag.get() instanceof BooleanFlag) {
+                // boolean flag can be without the value
+                contextBuilder.addValue(flag.get(), "true");
             }
             throw new IllegalArgumentException("Missing value for flag " + flag.get().getName());
         }
