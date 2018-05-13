@@ -2,12 +2,8 @@
 name = "org.jpx" # the name of the main module
 version = "0.1.0"    # the current version, obeying semver
 authors = ["you@example.com"]
+java_release = "8"
+type = "bin"
 
 [bin]
 main="org.jpx.Main"
-
-[deps]
-dep1="1.0.0"
-'org.some.dep2'="2.0.3"
-org_some_dep23="2.0.3"
-dep3 = { path = "sub-project" }

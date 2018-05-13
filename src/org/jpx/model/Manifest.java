@@ -42,7 +42,7 @@ public final class Manifest {
 
         try {
             Map<String, Object> toml = Toml.read(path.toFile());
-            return parse(path.getParent(), toml);
+            return parse(path.toAbsolutePath().getParent(), toml);
         } catch (IOException e) {
             e.printStackTrace();
         }

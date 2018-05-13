@@ -38,12 +38,14 @@ public final class Pack {
     public final Version version;
     public final List<String> authors;
     public final Type type;
+    public final String javaRelease;
 
-    private Pack(String name, Version version, List<String> authors, Type type) {
+    private Pack(String name, Version version, List<String> authors, Type type, String javaRelease) {
         this.name = name;
         this.version = version;
         this.authors = authors;
         this.type = type;
+        this.javaRelease = javaRelease;
     }
 
     @Override
@@ -61,6 +63,7 @@ public final class Pack {
         Version version = null;
         List<String> authors = null;
         Type type = null;
+        String javaRelease = null;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             switch (entry.getKey()) {
                 case "name":
@@ -77,6 +80,9 @@ public final class Pack {
                 case "authors":
                     authors = Types.safeCast(entry.getValue(), List.class);
                     break;
+                case "java_release":
+                    javaRelease = Types.safeCast(entry.getValue(), String.class);
+                    break;
                 case "type":
                     String typeString = Types.safeCast(entry.getValue(), String.class);
                     type = Type.ofName(typeString);
@@ -87,7 +93,7 @@ public final class Pack {
 
             }
         }
-        return new Pack(name, version, authors, type);
+        return new Pack(name, version, authors, type, javaRelease);
     }
 
 }

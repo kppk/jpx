@@ -2,6 +2,7 @@ package org.jpx;
 
 import org.jpx.cli.App;
 import org.jpx.cli.StringFlag;
+import org.jpx.cmd.Build;
 import org.jpx.cmd.Setup;
 
 public class Main {
@@ -11,6 +12,7 @@ public class Main {
             new Main().run(args);
         } catch (Exception e) {
             System.err.println("ERROR: " + e.getMessage());
+            e.printStackTrace();
             System.exit(1);
         }
     }
@@ -21,6 +23,8 @@ public class Main {
                 .setUsage("Java Packs manager")
                 .addCommand(Setup.CMD_NEW)
                 .addCommand(Setup.CMD_INIT)
+                .addCommand(Build.CMD_BUILD)
+                .addCommand(Build.CMD_CLEAN)
                 .addFlag(StringFlag.builder()
                         .setName("verbose")
                         .setShortName("v")
