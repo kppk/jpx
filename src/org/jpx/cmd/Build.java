@@ -41,33 +41,23 @@ public final class Build {
             .setExecutor(ctx -> clean())
             .build();
 
-
-    private static final String DIR_TARGET = "target";
-    private static final String DIR_SRC = "src";
-
     private static void build() {
-        // parse jpx.toml
         Manifest manifest = Manifest.readFrom(Paths.get(Manifest.NAME));
         //Graph graph = Graph.from(manifest);
 
-        Path basedir = manifest.basedir;
-        new JavaProject()
-                .baseDir(basedir)
-                .sourceDir(basedir.resolve(DIR_SRC))
-                .targetDir(basedir.resolve(DIR_TARGET))
+        System.out.println(String.format("Compiling %s v%s (%s)",
+                manifest.pack.name, manifest.pack.version, manifest.basedir.toAbsolutePath()));
+
+        new JavaProject(manifest.basedir)
                 .jdkRelease(JavaProject.JDK.releaseOf(manifest.pack.javaRelease))
                 .compile();
 
-
-        // resolve dependencies
-        // compile
-        // pack -> native/jar
-        System.out.println("build");
+        System.out.println("Finished");
     }
 
     private static void clean() {
         try {
-            Path target = Paths.get(DIR_TARGET);
+            Path target = Paths.get(JavaProject.DIR_TARGET);
             Files.walk(target)
                     .sorted(Comparator.reverseOrder())
                     .forEach(p -> p.toFile().delete());
@@ -79,24 +69,21 @@ public final class Build {
     // TODO: refactor this
     public static class JavaProject {
 
+        private static final String DIR_TARGET = "target";
+        private static final String DIR_CLASSES = "classes";
+        private static final String DIR_SRC = "src";
+
         private Path srcDir;
         private Path targetDir;
+        private Path classesDir;
         private Path baseDir;
         private JDK jdk;
 
-        public JavaProject baseDir(Path dir) {
-            this.baseDir = dir;
-            return this;
-        }
-
-        public JavaProject sourceDir(Path dir) {
-            this.srcDir = dir;
-            return this;
-        }
-
-        public JavaProject targetDir(Path dir) {
-            this.targetDir = dir;
-            return this;
+        public JavaProject(Path baseDir) {
+            this.baseDir = Objects.requireNonNull(baseDir);
+            srcDir = baseDir.resolve(DIR_SRC);
+            targetDir = baseDir.resolve(DIR_TARGET);
+            classesDir = targetDir.resolve(DIR_CLASSES);
         }
 
         public JavaProject jdkRelease(JDK release) {
@@ -122,7 +109,6 @@ public final class Build {
 
         public JavaProject compile() {
             try {
-                Path classesDir = targetDir.resolve("classes");
                 Files.createDirectories(classesDir);
                 List<String> args = new ArrayList<>();
                 String javac = getJavaHome().resolve("bin").resolve("javac").toString();
@@ -133,7 +119,6 @@ public final class Build {
                         srcDir.toString()
                 ));
                 args.addAll(getSourceFiles());
-
                 Process p = new ProcessBuilder()
                         .inheritIO()
                         .command(args)
@@ -152,7 +137,7 @@ public final class Build {
 
             public final String release;
 
-            private JDK(String name) {
+            JDK(String name) {
                 this.release = name;
             }
 

@@ -1,7 +1,6 @@
 package org.jpx.model;
 
-import org.jpx.dep.Dependency;
-import org.jpx.dep.Resolver;
+import org.jpx.dep.Graph;
 
 import java.nio.file.Paths;
 
@@ -17,5 +16,10 @@ public class ManifestTest {
     public void testParse() {
         Manifest manifest = Manifest.readFrom(Paths.get("./data/prj1/jpx.toml"));
         System.out.println(manifest);
+        Graph graph = Graph.from(manifest);
+        graph.printTree();
+        System.out.println("flatten:");
+        graph.flatten()
+                .forEach(dependency -> System.out.println("- " + dependency.name + ":" + dependency.version + " <-- " + dependency.resolver));
     }
 }

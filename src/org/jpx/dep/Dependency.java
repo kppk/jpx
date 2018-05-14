@@ -12,11 +12,13 @@ public final class Dependency {
     public final String name;
     public final Version version;
     public final List<Dependency> dependencies;
+    public final Resolver resolver;
 
-    public Dependency(String name, Version version, List<Dependency> dependencies) {
+    public Dependency(String name, Version version, List<Dependency> dependencies, Resolver resolver) {
         this.name = name;
         this.version = version;
         this.dependencies = dependencies;
+        this.resolver = resolver;
     }
 
     @Override

@@ -12,24 +12,33 @@ import java.nio.file.Paths;
  */
 public final class PathResolver implements Resolver {
 
-    final static PathResolver INSTANCE = new PathResolver();
     private static final String KEY_PATH = "path";
 
-    private PathResolver() {
+    private final Path baseDir;
+
+    PathResolver(Manifest mf) {
+        this.baseDir = mf.basedir;
     }
 
-    @Override
-    public boolean canResolve(Dep dep) {
+    public static boolean canResolve(Dep dep) {
         return dep.values.containsKey(KEY_PATH);
     }
 
     @Override
-    public Manifest resolve(Manifest parent, Dep dep) {
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("PathResolver{");
+        sb.append("baseDir=").append(baseDir);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public Manifest resolve(Dep dep) {
         String pathString = Types.safeCast(dep.values.get(KEY_PATH), String.class);
         if (pathString == null) {
             throw new IllegalArgumentException("Missing path");
         }
-        Path path = parent.basedir.resolve(Paths.get(pathString, Manifest.NAME));
+        Path path = baseDir.resolve(Paths.get(pathString, Manifest.NAME));
         return Manifest.readFrom(path);
     }
 
