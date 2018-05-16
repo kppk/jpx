@@ -71,6 +71,19 @@ public final class Setup {
             }
             Files.createDirectories(dirPath);
             initProject(dirPath, name, type);
+            Path pkgDir = dirPath.resolve("src").resolve("org").resolve("hello");
+            Files.createDirectories(pkgDir);
+            writeToFile(pkgDir.resolve("HelloLibrary.java"), String.join("\n",
+                    "package org.hello;",
+                    "",
+                    "public class HelloLibrary {",
+                    "",
+                    "   public void printHello() {",
+                    "       System.out.println(\"hello world!\");",
+                    "   }",
+                    "",
+                    "}"
+            ));
         } catch (IOException e) {
             throw new IllegalStateException("Can't create directory " + dir);
         }
@@ -97,7 +110,8 @@ public final class Setup {
                 "name = \"" + name + "\"",
                 "version = \"0.1.0\"",
                 "authors = [\"you@example.com\"]",
-                "type= \"" + type.name() + "\"",
+                "type = \"" + type.name + "\"",
+                "java_release = \"8\"",
                 ""
         );
     }

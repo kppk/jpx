@@ -17,7 +17,7 @@ public final class Pack {
         BINARY("bin");
 
 
-        private final String name;
+        public final String name;
 
         Type(String name) {
             this.name = name;
