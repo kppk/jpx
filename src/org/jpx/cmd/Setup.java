@@ -73,17 +73,32 @@ public final class Setup {
             initProject(dirPath, name, type);
             Path pkgDir = dirPath.resolve("src").resolve("org").resolve("hello");
             Files.createDirectories(pkgDir);
-            writeToFile(pkgDir.resolve("HelloLibrary.java"), String.join("\n",
-                    "package org.hello;",
-                    "",
-                    "public class HelloLibrary {",
-                    "",
-                    "   public void printHello() {",
-                    "       System.out.println(\"hello world!\");",
-                    "   }",
-                    "",
-                    "}"
-            ));
+            if (type == Pack.Type.LIBRARY) {
+                writeToFile(pkgDir.resolve("HelloLibrary.java"), String.join("\n",
+                        "package org.hello;",
+                        "",
+                        "public class HelloLibrary {",
+                        "",
+                        "   public void printHello() {",
+                        "       System.out.println(\"hello world!\");",
+                        "   }",
+                        "",
+                        "}"
+                ));
+            }
+            if (type == Pack.Type.BINARY) {
+                writeToFile(pkgDir.resolve("Main.java"), String.join("\n",
+                        "package org.hello;",
+                        "",
+                        "public class Main {",
+                        "",
+                        "   public static void main(String[] args) {",
+                        "       System.out.println(\"hello world!\");",
+                        "   }",
+                        "",
+                        "}"
+                ));
+            }
         } catch (IOException e) {
             throw new IllegalStateException("Can't create directory " + dir);
         }

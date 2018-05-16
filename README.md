@@ -36,7 +36,14 @@ Couple of main ideas:
             - doc - javadocs
             - jpx.toml -- file used when creating this jar
     
-    
+
+#Commands
+
+jpx new <project>   - create new project in provided directory
+jpx init            - init project in current directory
+jpx build           - build the project
+jpx clean           - remove target directory
+jpx dep    
     
     
 MVP scenario:

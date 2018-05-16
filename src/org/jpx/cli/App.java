@@ -100,7 +100,7 @@ public final class App {
         if (Flag.isFlag(arg)) {
             Optional<Flag> flag = flags.stream().filter(f -> f.matches(arg)).findFirst();
             if (!flag.isPresent()) {
-                throw new IllegalArgumentException("Missing value for " + flag.get().getName());
+                throw new IllegalArgumentException("Unknown flag " + arg);
             }
             // check next is available and it is not flag
             if (arguments.hasNext() && !Flag.isFlag(arguments.peek())) {
@@ -109,6 +109,7 @@ public final class App {
             } else if (flag.get() instanceof BooleanFlag) {
                 // boolean flag can be without the value
                 contextBuilder.addValue(flag.get(), "true");
+                return true;
             }
             throw new IllegalArgumentException("Missing value for flag " + flag.get().getName());
         }

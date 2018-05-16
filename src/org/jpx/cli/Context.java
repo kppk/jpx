@@ -19,11 +19,11 @@ public final class Context {
     }
 
     public <T> T getFlagValue(Flag<T> flag) {
-        return values.entrySet().stream()
-                .filter(entry -> entry.getKey().getName().equals(flag))
-                .findFirst()
-                .map(entry -> flag.convert(entry.getValue()))
-                .orElse(flag.getDefaultValue());
+        String valStr = values.get(flag);
+        if (valStr != null) {
+            return flag.convert(valStr);
+        }
+        return flag.getDefaultValue();
     }
 
     public Map<String, String> getFlagValues() {

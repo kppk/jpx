@@ -21,17 +21,17 @@ public final class BooleanFlag implements Flag<Boolean> {
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public String getShortName() {
-        return null;
+        return shortName;
     }
 
     @Override
     public String getUsage() {
-        return null;
+        return usage;
     }
 
     @Override
@@ -41,7 +41,7 @@ public final class BooleanFlag implements Flag<Boolean> {
 
     @Override
     public Boolean convert(String val) {
-        return null;
+        return Boolean.parseBoolean(val);
     }
 
     @Override
@@ -55,6 +55,17 @@ public final class BooleanFlag implements Flag<Boolean> {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("BooleanFlag{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", shortName='").append(shortName).append('\'');
+        sb.append(", usage='").append(usage).append('\'');
+        sb.append(", defaultValue=").append(defaultValue);
+        sb.append('}');
+        return sb.toString();
     }
 
     public static BooleanFlagBuilder builder() {

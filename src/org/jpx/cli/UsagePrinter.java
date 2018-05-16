@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Interface to implement to provide usage printer.s
+ * Interface to implement to provide usage printers.
  */
 @FunctionalInterface
 public interface UsagePrinter<T> {
