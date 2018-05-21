@@ -15,11 +15,21 @@ public class ManifestTest {
 
     public void testParse() {
         Manifest manifest = Manifest.readFrom(Paths.get("./data/prj1/jpx.toml"));
-        System.out.println(manifest);
+
+
+//        System.out.println(manifest);
         Graph graph = Graph.from(manifest);
-        graph.printTree();
-        System.out.println("flatten:");
-        graph.flatten()
-                .forEach(dependency -> System.out.println("- " + dependency.name + ":" + dependency.version + " <-- " + dependency.resolver));
+        Lock lock = new Lock(graph.flatten(), new Lock.Meta("someValue"));
+        lock.writeTo(Paths.get("./data/prj1"));
+
+        Lock anotherLock = Lock.readFrom(Paths.get("./data/prj1"));
+        System.out.println(anotherLock);
+
+//        graph.printTree();
+//        System.out.println("flatten:");
+//        graph.flatten()
+//                .forEach(dependency -> System.out.println("- " + dependency.name + ":" + dependency.version + " <-- " + dependency.resolver));
+//
+//        System.out.println("HASH: " + Objects.hash(manifest.deps));
     }
 }

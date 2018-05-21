@@ -25,7 +25,7 @@ public final class Graph {
         List<Dependency> dependencies = mf.deps.stream()
                 .map(dep -> {
                     Resolver r = Resolver.thatResolves(mf, dep);
-                    Manifest m = r.resolve(dep);
+                    Manifest m = r.resolve();
                     return doResolve(m, r);
                 })
                 .collect(Collectors.toList());

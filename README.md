@@ -35,8 +35,8 @@ Couple of main ideas:
             - src - source files
             - doc - javadocs
             - jpx.toml -- file used when creating this jar
-    
 
+    
 #Commands
 
 jpx new <project>   - create new project in provided directory
@@ -56,5 +56,7 @@ MVP scenario:
 
 expectation: dependent library is compiled to jar, static library `./bin/hello-world-1` is created      
     
-    
+Implementation details:
+
+- module name: "org.some.module-name"    
     

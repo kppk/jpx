@@ -5,7 +5,9 @@ import org.jpx.cli.Command;
 import org.jpx.cli.StringFlag;
 import org.jpx.model.Manifest;
 import org.jpx.model.Pack;
+import org.jpx.project.JavaProject;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -69,13 +71,18 @@ public final class Setup {
             if (Files.exists(dirPath)) {
                 throw new IllegalStateException("Directory [" + dir + "] already exists");
             }
+            if (name == null) {
+                name = dir;
+            }
             Files.createDirectories(dirPath);
-            initProject(dirPath, name, type);
-            Path pkgDir = dirPath.resolve("src").resolve("org").resolve("hello");
+            writeToFile(dirPath.resolve(Manifest.NAME), manifest(name, type));
+            name = JavaProject.asModuleName(name);
+            Path pkgDir = dirPath.resolve(JavaProject.DIR_SRC).resolve(name).resolve(name.replaceAll("\\.", File.separator));
+
             Files.createDirectories(pkgDir);
             if (type == Pack.Type.LIBRARY) {
                 writeToFile(pkgDir.resolve("HelloLibrary.java"), String.join("\n",
-                        "package org.hello;",
+                        "package " + name + ";",
                         "",
                         "public class HelloLibrary {",
                         "",
@@ -88,7 +95,7 @@ public final class Setup {
             }
             if (type == Pack.Type.BINARY) {
                 writeToFile(pkgDir.resolve("Main.java"), String.join("\n",
-                        "package org.hello;",
+                        "package " + name + ";",
                         "",
                         "public class Main {",
                         "",
@@ -115,6 +122,7 @@ public final class Setup {
         if (name == null) {
             name = dir.toString();
         }
+        name = JavaProject.asModuleName(name);
         writeToFile(dir.resolve(Manifest.NAME), manifest(name, type));
         System.out.println("New " + type.name() + " project initialized in " + dir);
     }
@@ -122,11 +130,11 @@ public final class Setup {
     private static String manifest(String name, Pack.Type type) {
         return String.join("\n",
                 "[pack]",
-                "name = \"" + name + "\"",
-                "version = \"0.1.0\"",
-                "authors = [\"you@example.com\"]",
-                "type = \"" + type.name + "\"",
-                "java_release = \"8\"",
+                "name = '" + JavaProject.asModuleName(name) + "'",
+                "version = '0.1.0'",
+                "authors = ['you@example.com']",
+                "type = '" + type.name + "'",
+                "java_release = '8'",
                 ""
         );
     }

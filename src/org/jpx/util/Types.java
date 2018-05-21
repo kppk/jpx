@@ -28,8 +28,14 @@ public final class Types {
         }
     }
 
-    public static <K, V> Map<K, V> castToMap(Object o, Class<K> kclazz, Class<V> vclass) {
-        return (Map<K, V>) o;
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> castToMap(Object o) {
+        return (Map<String, Object>) o;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Object> castToList(Object o) {
+        return (List<Object>) o;
     }
 
 

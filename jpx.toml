@@ -5,5 +5,5 @@ authors = ["you@example.com"]
 java_release = "8"
 type = "bin"
 
-[bin]
-main="org.jpx.Main"
+[deps]
+'org.main.module' = '1.0.0'

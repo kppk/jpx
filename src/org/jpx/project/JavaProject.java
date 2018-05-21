@@ -1,6 +1,7 @@
 package org.jpx.project;
 
 import org.jpx.model.Manifest;
+import org.jpx.model.Pack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public final class JavaProject {
     private static final String DIR_TARGET = "target";
     private static final String DIR_CLASSES = "classes";
     private static final String DIR_DOC = "doc";
-    private static final String DIR_SRC = "src";
+    public static final String DIR_SRC = "java";
 
     private final Path srcDir;
     private final Path targetDir;
@@ -32,20 +33,18 @@ public final class JavaProject {
     private final Path baseDir;
     private final Path docDir;
     private final Manifest manifest;
-    private JDK jdk;
+    private final JDK jdk;
 
     public JavaProject(Manifest mf) {
         this.manifest = Objects.requireNonNull(mf);
+
+        // todo: validate pack name
         this.baseDir = mf.basedir;
-        srcDir = baseDir.resolve(DIR_SRC);
+        srcDir = baseDir.resolve(DIR_SRC).resolve(mf.pack.name);
         targetDir = baseDir.resolve(DIR_TARGET);
         classesDir = targetDir.resolve(DIR_CLASSES);
         docDir = targetDir.resolve(DIR_DOC);
-    }
-
-    public JavaProject jdkRelease(JDK release) {
-        this.jdk = release;
-        return this;
+        jdk = JavaProject.JDK.releaseOf(manifest.pack.javaRelease);
     }
 
     private Path getJavaHome() {
@@ -137,7 +136,7 @@ public final class JavaProject {
                     //.inheritIO()
                     .command(jar,
                             "cfv",
-                            targetDir.resolve(manifest.pack.name + ".jar").toString(),
+                            getLibrary().toString(),
                             "-C",
                             classesDir.toString(),
                             ".",
@@ -158,6 +157,14 @@ public final class JavaProject {
     public JavaProject clean() {
         removeDir(targetDir);
         return this;
+    }
+
+    public boolean isLibrary() {
+        return manifest.pack.type == Pack.Type.LIBRARY;
+    }
+
+    public Path getLibrary() {
+        return targetDir.resolve(manifest.pack.name + ".jar");
     }
 
     public enum JDK {
@@ -253,6 +260,23 @@ public final class JavaProject {
         } catch (IOException e) {
             throw new IllegalStateException("Can't delete directory", e);
         }
+    }
+
+    /**
+     * Converts the provided name to module name.
+     * <p>
+     * Example:
+     * <p>
+     * my-great-module -> my.great.module
+     * my.great-module -> my.great.module
+     * MyModule -> mymodule
+     *
+     * @param name
+     * @return
+     */
+    public static String asModuleName(String name) {
+        Objects.requireNonNull(name);
+        return name.replaceAll("-", ".").replaceAll("_", ".").toLowerCase();
     }
 
 }

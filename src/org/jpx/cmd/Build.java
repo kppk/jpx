@@ -37,7 +37,6 @@ public final class Build {
                 manifest.pack.name, manifest.pack.version, manifest.basedir.toAbsolutePath()));
 
         new JavaProject(manifest)
-                .jdkRelease(JavaProject.JDK.releaseOf(manifest.pack.javaRelease))
                 .compile()
                 .doc()
                 .pack();

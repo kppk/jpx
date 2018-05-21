@@ -6,6 +6,7 @@ import org.jpx.version.Version;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * TODO: Document this
@@ -56,6 +57,24 @@ public final class Pack {
         sb.append(", authors=").append(authors);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pack pack = (Pack) o;
+        return Objects.equals(name, pack.name) &&
+                Objects.equals(version, pack.version) &&
+                Objects.equals(authors, pack.authors) &&
+                type == pack.type &&
+                Objects.equals(javaRelease, pack.javaRelease);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(name, version, authors, type, javaRelease);
     }
 
     static Pack parse(Map<String, Object> map) {

@@ -1,7 +1,6 @@
 [pack]
-name = "prj2"
-version = "0.1.0"
-authors = ["you@example.com"]
-type = "lib"
-
-[deps]
+name = 'prj2'
+version = '0.1.0'
+authors = ['you@example.com']
+type = 'bin'
+java_release = '8'

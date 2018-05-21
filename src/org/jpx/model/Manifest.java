@@ -49,13 +49,27 @@ public final class Manifest {
         return null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Manifest manifest = (Manifest) o;
+        return Objects.equals(pack, manifest.pack) &&
+                Objects.equals(deps, manifest.deps);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pack, deps);
+    }
+
     private static Manifest parse(Path dir, Map<String, Object> map) {
         Pack pack = null;
         List<Dep> deps = null;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             switch (entry.getKey()) {
                 case "pack":
-                    pack = Pack.parse(Types.castToMap(entry.getValue(), String.class, Object.class));
+                    pack = Pack.parse(Types.castToMap(entry.getValue()));
                     break;
                 case "deps":
                     deps = parseDeps(entry.getValue());
@@ -72,7 +86,7 @@ public final class Manifest {
 
     private static List<Dep> parseDeps(Object obj) {
         List<Dep> deps = new LinkedList<>();
-        for (Map.Entry<String, Object> entry : Types.castToMap(obj, String.class, Object.class).entrySet()) {
+        for (Map.Entry<String, Object> entry : Types.castToMap(obj).entrySet()) {
             deps.add(Dep.parse(entry));
         }
         return deps;

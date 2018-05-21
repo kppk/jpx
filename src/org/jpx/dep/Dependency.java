@@ -1,8 +1,12 @@
 package org.jpx.dep;
 
+import org.jpx.util.Types;
 import org.jpx.version.Version;
 
+import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO: Document this
@@ -29,5 +33,31 @@ public final class Dependency {
         sb.append(", dependencies=").append(dependencies);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static Dependency read(Map<String, Object> vals) {
+        try {
+            String name = Types.safeCast(vals.get("name"), String.class);
+            Version version = new Version(Types.safeCast(vals.get("version"), String.class));
+            Object source = vals.get("source");
+            Resolver resolver = null;
+            if (source != null) {
+                String sourceString = Types.safeCast(source, String.class);
+                resolver = Resolver.thatResolves(sourceString);
+            }
+            return new Dependency(name, version, null, resolver);
+        } catch (ParseException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public Map<String, ?> write() {
+        Map<String, String> vals = new HashMap<>();
+        vals.put("name", name);
+        vals.put("version", version.toString());
+        if (resolver != null) {
+            vals.put("source", resolver.toString());
+        }
+        return vals;
     }
 }

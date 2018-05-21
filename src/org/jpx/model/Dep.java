@@ -6,6 +6,7 @@ import org.jpx.version.Version;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * TODO: Document this
@@ -32,6 +33,21 @@ public final class Dep {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Dep dep = (Dep) o;
+        return Objects.equals(name, dep.name) &&
+                Objects.equals(version, dep.version) &&
+                Objects.equals(values, dep.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, version, values);
+    }
+
     static Dep parse(Map.Entry<String, Object> entry) {
         try {
             Object value = entry.getValue();
@@ -39,7 +55,7 @@ public final class Dep {
             Map<String, Object> values = Collections.emptyMap();
             Version version = null;
             if (value instanceof Map) {
-                values = Types.castToMap(value, String.class, Object.class);
+                values = Types.castToMap(value);
             } else {
                 version = new Version(Types.safeCast(entry.getValue(), String.class));
             }
