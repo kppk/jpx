@@ -41,7 +41,7 @@ public final class Lock {
             return vals;
         }
 
-        public static Meta read(Map<String, Object> vals) {
+        private static Meta read(Map<String, Object> vals) {
             Objects.requireNonNull(vals);
             Object val = vals.get("inputDigest");
             return new Meta(Types.safeCast(val, String.class));

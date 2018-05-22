@@ -5,8 +5,12 @@ import org.jpx.dep.Dependency;
 import org.jpx.dep.Graph;
 import org.jpx.model.Manifest;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO: Document this
@@ -23,9 +27,24 @@ public final class Dep {
     }
 
     private static void installDeps() {
-        Manifest mf = Manifest.readFrom(Paths.get("."));
+        Path current = Paths.get(".");
+        Manifest mf = Manifest.readFrom(current);
         Graph graph = Graph.from(mf);
         List<Dependency> list = graph.flatten();
+
+        Path libs = current.resolve("lib");
+        try {
+            if (!Files.exists(libs)) {
+                Files.createDirectory(libs);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
+        List<String> fetched = list.stream()
+                .filter(d -> d.resolver != null)
+                .map(d -> d.resolver.fetch(libs))
+                .collect(Collectors.toList());
 
 
         // to install dependencies:

@@ -77,7 +77,7 @@ public final class Pack {
         return Objects.hash(name, version, authors, type, javaRelease);
     }
 
-    static Pack parse(Map<String, Object> map) {
+    static Pack read(Map<String, Object> map) {
         String name = null;
         Version version = null;
         List<String> authors = null;

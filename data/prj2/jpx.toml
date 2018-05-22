@@ -4,3 +4,6 @@ version = '0.1.0'
 authors = ['you@example.com']
 type = 'bin'
 java_release = '8'
+
+[deps]
+prj1 = { path = '../prj1' }

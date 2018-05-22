@@ -30,7 +30,7 @@ public final class Build {
             .build();
 
     private static void build() {
-        Manifest manifest = Manifest.readFrom(Paths.get(Manifest.NAME));
+        Manifest manifest = Manifest.readFrom(Paths.get("."));
         //Graph graph = Graph.from(manifest);
 
         System.out.println(String.format("Compiling %s v%s (%s)",
@@ -45,7 +45,7 @@ public final class Build {
     }
 
     private static void clean() {
-        Manifest manifest = Manifest.readFrom(Paths.get(Manifest.NAME));
+        Manifest manifest = Manifest.readFrom(Paths.get("."));
         new JavaProject(manifest).clean();
     }
 

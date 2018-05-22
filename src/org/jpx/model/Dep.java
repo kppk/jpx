@@ -48,7 +48,7 @@ public final class Dep {
         return Objects.hash(name, version, values);
     }
 
-    static Dep parse(Map.Entry<String, Object> entry) {
+    static Dep read(Map.Entry<String, Object> entry) {
         try {
             Object value = entry.getValue();
             String name = entry.getKey();

@@ -3,6 +3,7 @@ package org.jpx;
 import org.jpx.cli.App;
 import org.jpx.cli.StringFlag;
 import org.jpx.cmd.Build;
+import org.jpx.cmd.Dep;
 import org.jpx.cmd.Setup;
 
 public class Main {
@@ -25,6 +26,7 @@ public class Main {
                 .addCommand(Setup.CMD_INIT)
                 .addCommand(Build.CMD_BUILD)
                 .addCommand(Build.CMD_CLEAN)
+                .addCommand(Dep.CMD_DEP_INSTALL)
                 .addFlag(StringFlag.builder()
                         .setName("verbose")
                         .setShortName("v")

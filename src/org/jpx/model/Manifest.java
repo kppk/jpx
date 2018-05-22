@@ -5,6 +5,7 @@ import org.jpx.util.Types;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,16 +38,15 @@ public final class Manifest {
         return sb.toString();
     }
 
-    public static Manifest readFrom(Path path) {
-        Objects.requireNonNull(path, "path");
+    public static Manifest readFrom(Path dir) {
+        Objects.requireNonNull(dir, "dir");
 
         try {
-            Map<String, Object> toml = Toml.read(path.toFile());
-            return parse(path.toAbsolutePath().normalize().getParent(), toml);
+            Map<String, Object> toml = Toml.read(dir.resolve(NAME).toFile());
+            return read(dir.toAbsolutePath().normalize(), toml);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
-        return null;
     }
 
     @Override
@@ -63,16 +63,16 @@ public final class Manifest {
         return Objects.hash(pack, deps);
     }
 
-    private static Manifest parse(Path dir, Map<String, Object> map) {
+    private static Manifest read(Path basedir, Map<String, Object> map) {
         Pack pack = null;
-        List<Dep> deps = null;
+        List<Dep> deps = Collections.emptyList();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             switch (entry.getKey()) {
                 case "pack":
-                    pack = Pack.parse(Types.castToMap(entry.getValue()));
+                    pack = Pack.read(Types.castToMap(entry.getValue()));
                     break;
                 case "deps":
-                    deps = parseDeps(entry.getValue());
+                    deps = readDeps(entry.getValue());
                     break;
             }
         }
@@ -81,13 +81,13 @@ public final class Manifest {
                     .map(entry -> entry.getKey() + ": " + entry.getKey())
                     .collect(Collectors.joining(",")));
         }, Types.pair("pack", pack));
-        return new Manifest(pack, deps, dir);
+        return new Manifest(pack, deps, basedir);
     }
 
-    private static List<Dep> parseDeps(Object obj) {
+    private static List<Dep> readDeps(Object obj) {
         List<Dep> deps = new LinkedList<>();
         for (Map.Entry<String, Object> entry : Types.castToMap(obj).entrySet()) {
-            deps.add(Dep.parse(entry));
+            deps.add(Dep.read(entry));
         }
         return deps;
     }

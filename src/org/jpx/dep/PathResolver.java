@@ -62,25 +62,41 @@ public final class PathResolver implements Resolver {
 
     @Override
     public Manifest resolve() {
-        return Manifest.readFrom(path.resolve(Manifest.NAME));
+        return Manifest.readFrom(path);
     }
 
     @Override
     public String fetch(Path dir) {
-        JavaProject libProject = new JavaProject(Manifest.readFrom(path.resolve(Manifest.NAME)))
-                .compile()
-                .doc()
-                .pack();
-
         try {
-            Files.copy(libProject.getLibrary(), dir);
+            JavaProject libProject = new JavaProject(Manifest.readFrom(path))
+                    .compile()
+                    .doc()
+                    .pack();
+
+            Path library = libProject.getLibrary();
+            Path targetLibrary = dir.resolve(library.getFileName());
+            if (Files.exists(targetLibrary)) {
+                Files.delete(targetLibrary);
+            }
+            Files.copy(library, targetLibrary);
             // TODO: improve this
-            byte[] b = Files.readAllBytes(Paths.get("/path/to/file"));
+            byte[] b = Files.readAllBytes(targetLibrary);
             byte[] hash = MessageDigest.getInstance("MD5").digest(b);
-            return new String(hash);
+            return printHexBinary(hash);
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
+
+    private static String printHexBinary(byte[] data) {
+        StringBuilder r = new StringBuilder(data.length * 2);
+        for (byte b : data) {
+            r.append(hexCode[(b >> 4) & 0xF]);
+            r.append(hexCode[(b & 0xF)]);
+        }
+        return r.toString();
     }
 
 }
