@@ -1,9 +1,9 @@
 [pack]
 name = "org.jpx" # the name of the main module
-version = "0.1.0"    # the current version, obeying semver
-authors = ["you@example.com"]
+version = "1.0.0"    # the current version, obeying semver
+repository = "https://github.com/kppk/jpx.git"
 java_release = "8"
 type = "bin"
 
 [deps]
-'org.main.module' = '1.0.0'
+'kppk.somelibrary' = '1.0.0'

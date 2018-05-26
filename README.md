@@ -43,7 +43,7 @@ jpx new <project>   - create new project in provided directory
 jpx init            - init project in current directory
 jpx build           - build the project
 jpx clean           - remove target directory
-jpx dep    
+jpx dep install    
     
     
 MVP scenario:
@@ -52,11 +52,13 @@ MVP scenario:
 - create another library project: `jps new hello-world-2 --lib`
 - change dir to first project: `cd hello-world-1`
 - put dependency on the library project: `echo '[deps]\nhello-world-2 = { path = \"../new hello-world-2\" }' >> jpx.toml`
-- build binary: `jpx pack`
+- build binary: `jpx build`
 
 expectation: dependent library is compiled to jar, static library `./bin/hello-world-1` is created      
+
+
     
-Implementation details:
+#Implementation details:
 
 - module name: "org.some.module-name"    
     

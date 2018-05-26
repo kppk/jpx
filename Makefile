@@ -15,6 +15,6 @@ javac:
 .PHOHY: native
 native: javac
 
-	$(NATIVE) -cp target org.jpx.Main
+	$(NATIVE) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -cp target org.jpx.Main
 	mkdir -p ./bin
-	mv org.jpx.Main ./bin/jpx
+	mv jpx ./bin/jpx

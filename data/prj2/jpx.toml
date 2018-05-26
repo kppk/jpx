@@ -6,4 +6,5 @@ type = 'bin'
 java_release = '8'
 
 [deps]
-prj1 = { path = '../prj1' }
+'kppk.somelibrary' = { git = 'https://github.com/kppk/somelibrary.git' }
+'kppk.somelibrary' = '1.0.0'

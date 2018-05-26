@@ -18,9 +18,6 @@ public interface Resolver {
         if (PathResolver.canResolve(dep)) {
             return new PathResolver(mf, dep);
         }
-        if (GitResolver.canResolve(dep)) {
-            return new GitResolver();
-        }
 
         throw new IllegalArgumentException("Don't know which resolver to use");
     }

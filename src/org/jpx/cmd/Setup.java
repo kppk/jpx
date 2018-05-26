@@ -131,11 +131,12 @@ public final class Setup {
         return String.join("\n",
                 "[pack]",
                 "name = '" + JavaProject.asModuleName(name) + "'",
-                "version = '0.1.0'",
-                "authors = ['you@example.com']",
+                "version = '1.0.0'",
                 "type = '" + type.name + "'",
-                "java_release = '8'",
-                ""
+                "java_release = '9'",
+                "",
+                "[deps]",
+                "'kppk.somelibrary' = '1.0.0'"
         );
     }
 
