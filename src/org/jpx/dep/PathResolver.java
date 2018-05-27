@@ -68,7 +68,7 @@ public final class PathResolver implements Resolver {
     @Override
     public String fetch(Path dir) {
         try {
-            JavaProject libProject = new JavaProject(Manifest.readFrom(path))
+            JavaProject libProject = JavaProject.createNew(Manifest.readFrom(path))
                     .compile()
                     .doc()
                     .pack();

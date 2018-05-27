@@ -80,6 +80,16 @@ public final class Setup {
             Path pkgDir = dirPath.resolve(JavaProject.DIR_SRC).resolve(name).resolve(name.replaceAll("\\.", File.separator));
 
             Files.createDirectories(pkgDir);
+            writeToFile(dirPath.resolve(".gitignore"), String.join("\n",
+                    "bin",
+                    "target",
+                    "lib",
+                    ""));
+            writeToFile(dirPath.resolve(JavaProject.DIR_SRC).resolve(name).resolve("module-info.java"), String.join("\n",
+                    "module " + name + " {",
+                    "    requires kppk.somelibrary;",
+                    "}",
+                    ""));
             if (type == Pack.Type.LIBRARY) {
                 writeToFile(pkgDir.resolve("HelloLibrary.java"), String.join("\n",
                         "package " + name + ";",

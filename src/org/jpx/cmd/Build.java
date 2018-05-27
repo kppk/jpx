@@ -36,7 +36,7 @@ public final class Build {
         System.out.println(String.format("Compiling %s v%s (%s)",
                 manifest.pack.name, manifest.pack.version, manifest.basedir.toAbsolutePath()));
 
-        new JavaProject(manifest)
+        JavaProject.createNew(manifest)
                 .compile()
                 .doc()
                 .pack();
@@ -46,7 +46,7 @@ public final class Build {
 
     private static void clean() {
         Manifest manifest = Manifest.readFrom(Paths.get("."));
-        new JavaProject(manifest).clean();
+        JavaProject.createNew(manifest).clean();
     }
 
 }

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public final class Dep {
 
     public static final Command CMD_DEP_INSTALL = Command.builder()
-            .setName("dep-install")
+            .setName("install")
             .setUsage("Install all dependencies to libs directory")
             .setExecutor(ctx -> installDeps())
             .build();

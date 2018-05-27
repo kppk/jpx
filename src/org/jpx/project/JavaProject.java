@@ -16,42 +16,67 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * TODO: Document this
  */
 public final class JavaProject {
 
-    private static final String DIR_TARGET = "target";
-    private static final String DIR_CLASSES = "classes";
-    private static final String DIR_DOC = "doc";
+    static final String DIR_TARGET = "target";
+    static final String DIR_CLASSES = "classes";
+    static final String DIR_MOD = "mod";
+    static final String DIR_DOC = "doc";
     public static final String DIR_SRC = "java";
+    static final String DIR_LIB = "lib";
 
-    private final Path srcDir;
-    private final Path targetDir;
-    private final Path classesDir;
-    private final Path baseDir;
-    private final Path docDir;
-    private final Manifest manifest;
-    private final JDK jdk;
+    final Path srcDir;
+    final Path targetDir;
+    final Path classesDir;
+    final Path baseDir;
+    final Path docDir;
+    final Path modTargetDir;
+    final Path modSrcDir;
+    final Manifest manifest;
+    final JDK jdk;
+    final Path javaHome;
+    final Path libDir;
+    final String name;
 
-    public JavaProject(Manifest mf) {
-        this.manifest = Objects.requireNonNull(mf);
+    private JavaProject(Manifest manifest,
+                        String name,
+                        Path baseDir,
+                        JDK jdk,
+                        Path javaHome) {
+        this.baseDir = baseDir;
+        this.name = name;
+        this.manifest = manifest;
+        this.srcDir = baseDir.resolve(DIR_SRC).resolve(name);
+        this.targetDir = baseDir.resolve(DIR_TARGET);
+        this.classesDir = targetDir.resolve(DIR_CLASSES);
+        this.docDir = targetDir.resolve(DIR_DOC);
+        this.libDir = baseDir.resolve(DIR_LIB);
+        this.jdk = jdk;
+        this.javaHome = javaHome;
+        this.modTargetDir = targetDir.resolve(DIR_MOD);
+        this.modSrcDir = baseDir.resolve(DIR_SRC);
+
+    }
+
+    public static JavaProject createNew(Manifest mf) {
+        Objects.requireNonNull(mf);
 
         // todo: validate pack name
-        this.baseDir = mf.basedir;
-        srcDir = baseDir.resolve(DIR_SRC).resolve(mf.pack.name);
-        targetDir = baseDir.resolve(DIR_TARGET);
-        classesDir = targetDir.resolve(DIR_CLASSES);
-        docDir = targetDir.resolve(DIR_DOC);
-        jdk = JavaProject.JDK.releaseOf(manifest.pack.javaRelease);
+        // todo: validate basedir
+        String name = mf.pack.name;
+        Path baseDir = mf.basedir;
+        JavaProject.JDK jdk = JavaProject.JDK.releaseOf(mf.pack.javaRelease);
+        Path javaHome = MACOS_JAVA_HOME_PROVIDER.apply(jdk);
+
+        return new JavaProject(mf, name, baseDir, jdk, javaHome);
     }
 
-    private Path getJavaHome() {
-        return MACOS_JAVA_HOME_PROVIDER.apply(jdk);
-    }
-
-    private List<String> getSourceFiles() {
+    public List<String> getSourceFiles() {
         try {
             return Files
                     .walk(srcDir)
@@ -63,34 +88,34 @@ public final class JavaProject {
         }
     }
 
-    public JavaProject compile() {
+    public List<String> getModuleDirs() {
         try {
-            Files.createDirectories(classesDir);
-            String javac = getJavaHome().resolve("bin").resolve("javac").toString();
-            List<String> args = new ArrayList<>();
-            args.addAll(Arrays.asList(javac,
-                    "-d",
-                    classesDir.toString(),
-                    "-sourcepath",
-                    srcDir.toString()
-            ));
-            args.addAll(getSourceFiles());
-            Process p = new ProcessBuilder()
-                    .inheritIO()
-                    .command(args)
-                    .directory(baseDir.toFile())
-                    .redirectErrorStream(true)
-                    .start();
-            p.waitFor();
-            return this;
-        } catch (IOException | InterruptedException e) {
+            Stream<Path> projectMods = Stream.of(modSrcDir);
+
+            Stream<Path> libMods = Stream.empty();
+            if (Files.exists(libDir)) {
+                libMods = Files.list(libDir)
+                        .filter(p -> Files.isDirectory(p) && Files.exists(p.resolve(DIR_SRC)))
+                        .map(p -> p.resolve(DIR_SRC));
+            }
+
+            return Stream.concat(projectMods, libMods)
+                    .map(baseDir::relativize)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
+    public JavaProject compile() {
+        Compiler.getCompiler(jdk).compile(this);
+        return this;
+    }
+
     public JavaProject doc() {
         try {
-            String javadoc = getJavaHome().resolve("bin").resolve("javadoc").toString();
+            String javadoc = javaHome.resolve("bin").resolve("javadoc").toString();
             Files.createDirectories(docDir);
             List<String> args = new ArrayList<>();
             args.addAll(Arrays.asList(javadoc,
@@ -131,7 +156,7 @@ public final class JavaProject {
             copy(docDir, metaInfDoc);
             copy(srcDir, metaInfSrc);
             copy(manifest.basedir.resolve(Manifest.NAME), metaInf.resolve(Manifest.NAME));
-            String jar = getJavaHome().resolve("bin").resolve("jar").toString();
+            String jar = javaHome.resolve("bin").resolve("jar").toString();
             Process p = new ProcessBuilder()
                     //.inheritIO()
                     .command(jar,
@@ -188,7 +213,7 @@ public final class JavaProject {
     interface JavaHomeProvider extends Function<JDK, Path> {
     }
 
-    private static final JavaHomeProvider MACOS_JAVA_HOME_PROVIDER = (jdk -> {
+    private static final JavaHomeProvider MACOS_JAVA_HOME_PROVIDER = jdk -> {
         String versionString = (jdk == JDK.REL_8) ? "1.8" : jdk.release;
         try {
             Process process = new ProcessBuilder()
@@ -204,7 +229,7 @@ public final class JavaProject {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-    });
+    };
 
     private static List<String> readAll(Process process) {
         List<String> out = new ArrayList<>();
