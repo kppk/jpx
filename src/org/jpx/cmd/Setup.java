@@ -146,7 +146,7 @@ public final class Setup {
                 "java_release = '9'",
                 "",
                 "[deps]",
-                "'kppk.somelibrary' = '1.0.1'"
+                "'kppk.somelibrary' = '1.0.0 <= v < 2.0.0'"
         );
     }
 
