@@ -4,3 +4,6 @@ version = '0.1.0'
 authors = ['you@example.com']
 type = 'lib'
 java_release = '8'
+
+[deps]
+'kppk.somelibrary' = '1.0.0 <= v < 2.0.0'

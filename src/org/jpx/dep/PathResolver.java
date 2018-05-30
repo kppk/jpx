@@ -2,17 +2,14 @@ package org.jpx.dep;
 
 import org.jpx.model.Dep;
 import org.jpx.model.Manifest;
-import org.jpx.project.JavaProject;
 import org.jpx.util.Types;
+import org.jpx.version.Version;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * Resolves from path in the local filesystem.
@@ -28,7 +25,7 @@ public final class PathResolver implements Resolver {
         if (pathString == null) {
             throw new IllegalArgumentException("Missing path");
         }
-        path = mf.basedir.resolve(Paths.get(pathString));
+        path = Paths.get(mf.basedir).resolve(Paths.get(pathString));
     }
 
     PathResolver(Path path) {
@@ -61,31 +58,45 @@ public final class PathResolver implements Resolver {
     }
 
     @Override
+    public List<Version> listVersions() {
+        return null;
+    }
+
+    @Override
+    public Manifest getManifest(Version version) {
+        return null;
+    }
+
+    @Override
+    public void fetch(Version version, Path targetDir) {
+
+    }
+
     public Manifest resolve() {
         return Manifest.readFrom(path);
     }
 
-    @Override
     public String fetch(Path dir) {
-        try {
-            JavaProject libProject = JavaProject.createNew(Manifest.readFrom(path))
-                    .compile()
-                    .doc()
-                    .pack();
-
-            Path library = libProject.getLibrary();
-            Path targetLibrary = dir.resolve(library.getFileName());
-            if (Files.exists(targetLibrary)) {
-                Files.delete(targetLibrary);
-            }
-            Files.copy(library, targetLibrary);
-            // TODO: improve this
-            byte[] b = Files.readAllBytes(targetLibrary);
-            byte[] hash = MessageDigest.getInstance("MD5").digest(b);
-            return printHexBinary(hash);
-        } catch (IOException | NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
+        return null;
+//        try {
+//            JavaProject libProject = JavaProject.createNew(Manifest.readFrom(path))
+//                    .build()
+//                    .doc()
+//                    .pack();
+//
+//            Path library = libProject.getLibrary();
+//            Path targetLibrary = dir.resolve(library.getFileName());
+//            if (Files.exists(targetLibrary)) {
+//                Files.delete(targetLibrary);
+//            }
+//            Files.copy(library, targetLibrary);
+//            // TODO: improve this
+//            byte[] b = Files.readAllBytes(targetLibrary);
+//            byte[] hash = MessageDigest.getInstance("MD5").digest(b);
+//            return printHexBinary(hash);
+//        } catch (IOException | NoSuchAlgorithmException e) {
+//            throw new IllegalStateException(e);
+//        }
     }
 
     private static final char[] hexCode = "0123456789ABCDEF".toCharArray();

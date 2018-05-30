@@ -4,6 +4,7 @@ import org.jpx.util.Types;
 import org.jpx.version.Version;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -113,6 +114,16 @@ public final class Pack {
             }
         }
         return new Pack(name, version, authors, type, javaRelease);
+    }
+
+    Map<String, Object> write() {
+        Map<String, Object> vals = new HashMap<>();
+        vals.put("name", name);
+        vals.put("version", version.toString());
+        vals.put("authors", authors);
+        vals.put("java_release", javaRelease);
+        vals.put("type", type.name);
+        return vals;
     }
 
 }

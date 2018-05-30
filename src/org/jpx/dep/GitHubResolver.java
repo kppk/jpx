@@ -2,56 +2,59 @@ package org.jpx.dep;
 
 import org.jpx.model.Dep;
 import org.jpx.model.Manifest;
-import org.jpx.util.Types;
+import org.jpx.version.Version;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * TODO: Document this
  */
 public final class GitHubResolver implements Resolver {
 
-    private static final String KEY_GIT = "git";
+    private final String user;
+    private final String project;
 
-    private final String name;
-    private final URL gitUrl;
 
     GitHubResolver(Dep dep) {
-        String gitUrl = Types.safeCast(dep.values.get(KEY_GIT), String.class);
-        if (gitUrl == null) {
-            throw new IllegalArgumentException("Missing git");
+        String name = dep.name;
+        int idx = name.indexOf(".");
+        if (idx == -1) {
+            throw new IllegalArgumentException("Invalid name, missing '.'");
         }
-        try {
-            this.gitUrl = new URL(gitUrl);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid git url: " + gitUrl);
-        }
-        this.name = dep.name;
+        user = name.substring(0, idx);
+        project = name.substring(idx + 1);
     }
 
     static boolean canResolve(Dep dep) {
-        if (!dep.values.containsKey(KEY_GIT)) {
-            return false;
-        }
-
-        String gitUrl = Types.safeCast(dep.values.get(KEY_GIT), String.class);
-        if (gitUrl == null) {
-            return false;
-        }
-        return gitUrl.startsWith("https://github.com/");
+        return true;
     }
 
     @Override
-    public Manifest resolve() {
-        
-        return null;
+    public List<Version> listVersions() {
+        return GitHubClient.getTags(user, project).stream()
+                .map(s -> {
+                    try {
+                        return new Version(s);
+                    } catch (ParseException e) {
+                        // ignore
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public String fetch(Path dir) {
-        return null;
+    public Manifest getManifest(Version version) {
+        return GitHubClient.getManifest(user, project, version.toString());
     }
 
+    @Override
+    public void fetch(Version version, Path targetDir) {
+        GitHubClient.fetchZipball(user, project, version.toString(), targetDir);
+    }
 }

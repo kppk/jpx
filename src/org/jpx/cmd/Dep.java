@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TODO: Document this
@@ -30,21 +29,22 @@ public final class Dep {
         Path current = Paths.get(".");
         Manifest mf = Manifest.readFrom(current);
         Graph graph = Graph.from(mf);
-        List<Dependency> list = graph.flatten();
+        List<Dependency> dependencies = graph.flatten();
 
-        Path libs = current.resolve("lib");
+        Path lib = current.resolve("lib");
         try {
-            if (!Files.exists(libs)) {
-                Files.createDirectory(libs);
+            if (!Files.exists(lib)) {
+                Files.createDirectory(lib);
             }
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
 
-        List<String> fetched = list.stream()
+        dependencies.stream()
                 .filter(d -> d.resolver != null)
-                .map(d -> d.resolver.fetch(libs))
-                .collect(Collectors.toList());
+                .forEach(dependency -> {
+                    dependency.resolver.fetch(dependency.version, lib);
+                });
 
 
         // to install dependencies:

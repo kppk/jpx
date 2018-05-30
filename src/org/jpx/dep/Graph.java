@@ -1,6 +1,7 @@
 package org.jpx.dep;
 
 import org.jpx.model.Manifest;
+import org.jpx.version.Version;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +26,8 @@ public final class Graph {
         List<Dependency> dependencies = mf.deps.stream()
                 .map(dep -> {
                     Resolver r = Resolver.thatResolves(mf, dep);
-                    Manifest m = r.resolve();
+                    Version v = r.latest(dep);
+                    Manifest m = r.getManifest(v);
                     return doResolve(m, r);
                 })
                 .collect(Collectors.toList());

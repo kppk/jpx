@@ -15,6 +15,18 @@ public class VersionRange {
         this.upperBound = upperBound;
     }
 
+    public boolean accepts(Version version) {
+        Objects.requireNonNull(version);
+
+        if (lowerBound.equals(version)) {
+            return true;
+        }
+        if (lowerBound.compareTo(version) < 0 && upperBound.compareTo(version) > 0) {
+            return true;
+        }
+        return false;
+    }
+
     public static VersionRange parse(String range) {
         Objects.requireNonNull(range);
 
@@ -40,11 +52,18 @@ public class VersionRange {
         }
     }
 
+    public String toString() {
+        return lowerBound.toString() + " <= v < " + upperBound.toString();
+    }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         VersionRange range = VersionRange.parse("1.0.0 <= v < 2.0.0");
         System.out.println(range.lowerBound);
         System.out.println(range.upperBound);
+        System.out.println(range.accepts(new Version("1.0.0")));
+        System.out.println(range.accepts(new Version("1.5.1")));
+        System.out.println(range.accepts(new Version("2.0.0")));
+        System.out.println(range.accepts(new Version("3.0.0")));
     }
 
 }

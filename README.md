@@ -29,6 +29,12 @@ Main ideas:
         target  <-- build under this directory            
           mods
         jpx.toml
+
+###version
+    
+    - pack has semantic version
+    - pack starts with version 1.0.0
+    - support for version bumping
         
     
 ###dependency management
@@ -36,6 +42,12 @@ Main ideas:
     - backed up by github (might be extended to other git repos later)
     - dependency is on source (!) repository    
     - on running build, fetch all dependencies to `lib` directory
+    - dependency is defined as:
+        
+        [dep]
+        'kppk.somelibrary' = '1.0.0 <= v < 2.0.0'
+        
+        this is translated to `https://github.com/kppk/somelibrary`, tags from 1.0.0 up to (not including) 2.0.0
          
 ###build
 

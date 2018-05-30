@@ -34,12 +34,10 @@ public final class Build {
         //Graph graph = Graph.from(manifest);
 
         System.out.println(String.format("Compiling %s v%s (%s)",
-                manifest.pack.name, manifest.pack.version, manifest.basedir.toAbsolutePath()));
+                manifest.pack.name, manifest.pack.version, Paths.get(manifest.basedir).toAbsolutePath()));
 
         JavaProject.createNew(manifest)
-                .compile()
-                .doc()
-                .pack();
+                .build(true);
 
         System.out.println("Finished");
     }

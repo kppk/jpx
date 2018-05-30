@@ -1,10 +1,10 @@
 package org.jpx.model;
 
 import org.jpx.util.Types;
-import org.jpx.version.Version;
+import org.jpx.version.VersionRange;
 
-import java.text.ParseException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -14,10 +14,10 @@ import java.util.Objects;
 public final class Dep {
 
     public final String name;
-    public final Version version;
+    public final VersionRange version;
     public final Map<String, Object> values;
 
-    public Dep(String name, Version version, Map<String, Object> values) {
+    public Dep(String name, VersionRange version, Map<String, Object> values) {
         this.name = name;
         this.version = version;
         this.values = values;
@@ -49,19 +49,19 @@ public final class Dep {
     }
 
     static Dep read(Map.Entry<String, Object> entry) {
-        try {
-            Object value = entry.getValue();
-            String name = entry.getKey();
-            Map<String, Object> values = Collections.emptyMap();
-            Version version = null;
-            if (value instanceof Map) {
-                values = Types.castToMap(value);
-            } else {
-                version = new Version(Types.safeCast(entry.getValue(), String.class));
-            }
-            return new Dep(name, version, values);
-        } catch (ParseException e) {
-            throw new ManifestException(e);
+        Object value = entry.getValue();
+        String name = entry.getKey();
+        Map<String, Object> values = Collections.emptyMap();
+        VersionRange version = null;
+        if (value instanceof Map) {
+            values = Types.castToMap(value);
+        } else {
+            version = VersionRange.parse(Types.safeCast(entry.getValue(), String.class));
         }
+        return new Dep(name, version, values);
+    }
+
+    Map.Entry<String, Object> write() {
+        return new HashMap.SimpleEntry<>(name, version.toString());
     }
 }

@@ -4,8 +4,11 @@ import org.jpx.toml.Toml;
 import org.jpx.util.Types;
 
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +24,9 @@ public final class Manifest {
 
     public final Pack pack;
     public final List<Dep> deps;
-    public final Path basedir;
+    public final URI basedir;
 
-    private Manifest(Pack pack, List<Dep> deps, Path basedir) {
+    private Manifest(Pack pack, List<Dep> deps, URI basedir) {
         this.pack = pack;
         this.deps = deps;
         this.basedir = basedir;
@@ -43,7 +46,24 @@ public final class Manifest {
 
         try {
             Map<String, Object> toml = Toml.read(dir.resolve(NAME).toFile());
-            return read(dir.toAbsolutePath().normalize(), toml);
+            return read(dir.toAbsolutePath().normalize().toUri(), toml);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static Manifest readFrom(URI uri, String content) {
+        Map<String, Object> toml = Toml.read(content);
+        return read(uri, toml);
+    }
+
+    public void writeTo(Path dir) {
+        try {
+            Path file = Objects.requireNonNull(dir).resolve(NAME);
+            if (Files.notExists(file)) {
+                Files.createFile(file);
+            }
+            Toml.write(write(), file.toFile());
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -63,7 +83,7 @@ public final class Manifest {
         return Objects.hash(pack, deps);
     }
 
-    private static Manifest read(Path basedir, Map<String, Object> map) {
+    private static Manifest read(URI basedir, Map<String, Object> map) {
         Pack pack = null;
         List<Dep> deps = Collections.emptyList();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -90,6 +110,15 @@ public final class Manifest {
             deps.add(Dep.read(entry));
         }
         return deps;
+    }
+
+    private Map<String, Object> write() {
+        HashMap<String, Object> vals = new HashMap<>();
+        vals.put("pack", pack.write());
+        vals.put("deps", deps.stream()
+                .map(Dep::write)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        return vals;
     }
 
 

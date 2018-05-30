@@ -14,7 +14,7 @@ public class ManifestTest {
     }
 
     public void testParse() {
-        Manifest manifest = Manifest.readFrom(Paths.get("./data/prj1/jpx.toml"));
+        Manifest manifest = Manifest.readFrom(Paths.get("./data/prj1/"));
 
 
 //        System.out.println(manifest);
