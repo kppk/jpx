@@ -15,6 +15,6 @@ javac:
 .PHOHY: native
 native: javac
 
-	$(NATIVE) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -H:EnableURLProtocols=https -cp target org.jpx.Main
+	$(NATIVE) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -cp target org.jpx.Main
 	mkdir -p ./bin
 	mv jpx ./bin/jpx

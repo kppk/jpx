@@ -1,7 +1,8 @@
-package org.jpx.project;
+package org.jpx.sys;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,13 +11,19 @@ import java.util.stream.Stream;
 /**
  * TODO: Document this
  */
-final class Command {
+public final class SysCommand {
     public final String command;
     public final List<String> parameters;
+    public final SysCommand pipeTo;
 
-    private Command(String command, List<String> parameters) {
+    private SysCommand(String command, List<String> parameters) {
+        this(command, parameters, null);
+    }
+
+    private SysCommand(String command, List<String> parameters, SysCommand pipeTo) {
         this.command = command;
         this.parameters = parameters;
+        this.pipeTo = pipeTo;
     }
 
     private String commandWithPath(Path dir) {
@@ -34,10 +41,22 @@ final class Command {
     }
 
     public String toStringWithFullPath(Path dir) {
-        return args(dir).collect(Collectors.joining(" "));
+        String str = args(dir).collect(Collectors.joining(" "));
+        if (pipeTo != null) {
+            return str + "|" + pipeTo.toStringWithFullPath(dir);
+        }
+        return str;
     }
 
     public List<String> toListWithFullPath(Path dir) {
+        if (pipeTo != null) {
+            return Arrays.asList(
+                    "/bin/bash",
+                    "-l",
+                    "-c",
+                    toStringWithFullPath(dir)
+            );
+        }
         return args(dir).collect(Collectors.toList());
     }
 
@@ -48,9 +67,17 @@ final class Command {
     public static final class Builder {
         private final String command;
         private List<String> params = new ArrayList<>();
+        private Builder pipeTo;
+        private final Builder root;
 
-        public Builder(String command) {
+        private Builder(String command) {
             this.command = command;
+            this.root = this;
+        }
+
+        private Builder(Builder root, String command) {
+            this.command = command;
+            this.root = root;
         }
 
         public Builder addParameter(String param) {
@@ -58,11 +85,20 @@ final class Command {
             return this;
         }
 
-        public Command build() {
+        public Builder pipeTo(String command) {
+            pipeTo = new Builder(root, command);
+            return pipeTo;
+        }
+
+        public SysCommand build() {
             if (command == null || command.trim().equals("")) {
                 throw new IllegalArgumentException("Missing command");
             }
-            return new Command(command, Collections.unmodifiableList(params));
+            return root.doBuild();
+        }
+
+        private SysCommand doBuild() {
+            return new SysCommand(command, Collections.unmodifiableList(params), pipeTo != null ? pipeTo.doBuild() : null);
         }
     }
 }

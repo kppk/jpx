@@ -1,5 +1,7 @@
 package org.jpx.project;
 
+import org.jpx.sys.SysCommand;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
  */
 interface Compiler {
 
-    Command compile(JavaProject project);
+    SysCommand compile(JavaProject project);
 
     static Compiler getCompiler(JDK jdk) {
         Objects.requireNonNull(jdk);
@@ -27,7 +29,7 @@ interface Compiler {
         try {
             Files.createDirectories(project.targetModDir);
             String mods = project.getModuleDirs().stream().collect(Collectors.joining(File.pathSeparator));
-            Command.Builder builder = Command.builder("javac")
+            SysCommand.Builder builder = SysCommand.builder("javac")
                     .addParameter("-d")
                     .addParameter(project.targetModDir.toString())
                     .addParameter("--module-source-path")

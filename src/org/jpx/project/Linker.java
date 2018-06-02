@@ -1,5 +1,7 @@
 package org.jpx.project;
 
+import org.jpx.sys.SysCommand;
+
 import java.util.Objects;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Objects;
 @FunctionalInterface
 public interface Linker {
 
-    Command link(JavaProject project);
+    SysCommand link(JavaProject project);
 
     static Linker getLinker(JDK jdk) {
         Objects.requireNonNull(jdk);
@@ -24,7 +26,7 @@ public interface Linker {
         if (project.isLibrary()) {
             // TODO: handle this
         }
-        return Command.builder("jlink")
+        return SysCommand.builder("jlink")
                 .addParameter("--module-path")
                 .addParameter(project.targetModDir.toString())
                 .addParameter("--add-modules")

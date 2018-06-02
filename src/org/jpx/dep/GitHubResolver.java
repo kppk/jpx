@@ -35,7 +35,7 @@ public final class GitHubResolver implements Resolver {
 
     @Override
     public List<Version> listVersions() {
-        return GitHubClient.getTags(user, project).stream()
+        return GitHubCurlResolver.getTags(user, project).stream()
                 .map(s -> {
                     try {
                         return new Version(s);
@@ -50,11 +50,11 @@ public final class GitHubResolver implements Resolver {
 
     @Override
     public Manifest getManifest(Version version) {
-        return GitHubClient.getManifest(user, project, version.toString());
+        return GitHubCurlResolver.getManifest(user, project, version.toString());
     }
 
     @Override
     public void fetch(Version version, Path targetDir) {
-        GitHubClient.fetchZipball(user, project, version.toString(), targetDir);
+        GitHubCurlResolver.fetchZipball(user, project, version.toString(), targetDir);
     }
 }

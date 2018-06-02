@@ -4,6 +4,7 @@ import org.jpx.toml.Toml;
 import org.jpx.util.Types;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,6 +56,16 @@ public final class Manifest {
     public static Manifest readFrom(URI uri, String content) {
         Map<String, Object> toml = Toml.read(content);
         return read(uri, toml);
+    }
+
+    public static Manifest readFrom(URI uri, Reader reader) {
+        Map<String, Object> toml = null;
+        try {
+            toml = Toml.read(reader, 2048, true);
+            return read(uri, toml);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public void writeTo(Path dir) {

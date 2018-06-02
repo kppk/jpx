@@ -116,7 +116,7 @@ class GitHubClient {
     }
 
     @SuppressWarnings("unchecked")
-    private static List<String> parseTags(JSONDocument doc) {
+    static List<String> parseTags(JSONDocument doc) {
         if (!doc.isArray()) {
             throw new IllegalStateException("Unexpected GitHub json response, expected array");
         }

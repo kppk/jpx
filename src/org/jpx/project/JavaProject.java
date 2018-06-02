@@ -2,6 +2,8 @@ package org.jpx.project;
 
 import org.jpx.model.Manifest;
 import org.jpx.model.Pack;
+import org.jpx.sys.Executor;
+import org.jpx.sys.SysCommand;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,13 +29,13 @@ public final class JavaProject {
 
 
     private final Path targetDir;
-    final Path baseDir;
+    public final Path baseDir;
     final Path targetModDir;
     final Path srcDir;
     final Path binTargetDir;
     final Manifest manifest;
     final JDK jdk;
-    final Path javaHome;
+    public final Path javaHome;
     final Path libDir;
     final String name;
     final String binaryName;
@@ -93,12 +95,12 @@ public final class JavaProject {
 
     public JavaProject build(boolean link) {
 
-        List<Command> cmds = new ArrayList<>();
+        List<SysCommand> cmds = new ArrayList<>();
         cmds.add(Compiler.getCompiler(jdk).compile(this));
         if (link && !isLibrary()) {
             cmds.add(Linker.getLinker(jdk).link(this));
         }
-        Executor.LOCAL.execute(this, cmds);
+        Executor.execute(this, cmds);
         return this;
     }
 
