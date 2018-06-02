@@ -25,7 +25,7 @@ public final class JavaProject {
     static final String DIR_MOD = "mod";
     public static final String DIR_SRC = "java";
     static final String DIR_LIB = "lib";
-    static final String DIR_BIN = "bin";
+    static final String DIR_BIN = "binary";
 
 
     private final Path targetDir;
@@ -98,6 +98,7 @@ public final class JavaProject {
         List<SysCommand> cmds = new ArrayList<>();
         cmds.add(Compiler.getCompiler(jdk).compile(this));
         if (link && !isLibrary()) {
+            removeDir(binTargetDir);
             cmds.add(Linker.getLinker(jdk).link(this));
         }
         Executor.execute(this, cmds);
@@ -145,11 +146,7 @@ public final class JavaProject {
 
     public static String asBinaryName(String name) {
         Objects.requireNonNull(name);
-        int idx = name.lastIndexOf(".");
-        if (idx != -1) {
-            return name.substring(idx).toLowerCase();
-        }
-        return name.toLowerCase();
+        return name.replace(".", "-");
     }
 
 }

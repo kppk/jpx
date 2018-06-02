@@ -5,6 +5,7 @@ import org.jpx.cli.StringFlag;
 import org.jpx.cmd.Build;
 import org.jpx.cmd.Dep;
 import org.jpx.cmd.Setup;
+import org.jpx.sys.ConsolePrinter;
 
 public class Main {
 
@@ -12,8 +13,7 @@ public class Main {
         try {
             new Main().run(args);
         } catch (Exception e) {
-            System.err.println("ERROR: " + e.getMessage());
-            e.printStackTrace();
+            ConsolePrinter.error(e);
             System.exit(1);
         }
     }
@@ -37,14 +37,4 @@ public class Main {
 
     }
 
-
-    /**
-     * Support the following commands:
-     *
-     * new <dir> -- create new directory and run init there
-     * init -- creates new jpx.toml file in current directory
-     * build -- build current project to target directory
-     * clean -- removes the target directory
-     *
-     */
 }

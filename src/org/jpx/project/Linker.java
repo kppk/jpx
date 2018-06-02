@@ -28,7 +28,7 @@ public interface Linker {
         }
         return SysCommand.builder("jlink")
                 .addParameter("--module-path")
-                .addParameter(project.targetModDir.toString())
+                .addParameter(project.targetModDir.toString() + ":" + project.javaHome.resolve("jmods"))
                 .addParameter("--add-modules")
                 .addParameter(project.name)
                 .addParameter("--output")

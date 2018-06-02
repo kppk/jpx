@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO: Document this
@@ -27,6 +27,7 @@ public final class Executor {
         try {
             for (SysCommand cmd : commands) {
                 List<String> args = cmd.toListWithFullPath(binaryDir);
+                ConsolePrinter.verbose(() -> "[Execute] " + args.stream().collect(Collectors.joining(" ")));
                 Process process = new ProcessBuilder(args)
                         .directory(baseDir.toFile())
                         .inheritIO()

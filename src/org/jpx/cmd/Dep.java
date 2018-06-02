@@ -26,8 +26,13 @@ public final class Dep {
     }
 
     private static void installDeps() {
+
         Path current = Paths.get(".");
         Manifest mf = Manifest.readFrom(current);
+
+        System.out.println(String.format("Installing dependencies for %s (%s)",
+                mf.pack.name, Paths.get(mf.basedir).toAbsolutePath()));
+
         Graph graph = Graph.from(mf);
         List<Dependency> dependencies = graph.flatten();
 
@@ -47,11 +52,6 @@ public final class Dep {
                 });
 
 
-        // to install dependencies:
-        // parse toml
-        // resolve all
-        // flatten
-        // for each dependency do fetch on resolver
-        // write lock file
+        System.out.println("Finished");
     }
 }
