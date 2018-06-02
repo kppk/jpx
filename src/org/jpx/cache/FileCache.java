@@ -1,5 +1,6 @@
 package org.jpx.cache;
 
+import org.jpx.config.JPXConfig;
 import org.jpx.dep.Resolver;
 import org.jpx.model.Dep;
 import org.jpx.model.Manifest;
@@ -9,7 +10,6 @@ import org.jpx.version.Version;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,17 +18,13 @@ import java.util.Objects;
  */
 public class FileCache implements Resolver {
 
-    private static final String DEFAULT_LOCATION = System.getProperty("user.home") + "/.jpx/";
-
     private static final String PACK_DIR = ".pack";
     private static final String MANIFEST_DIR = ".manifest";
 
     private final Dep dep;
     private final Resolver delegate;
-    private final Path root;
 
     public FileCache(Dep dep, Resolver delegate) {
-        this.root = Paths.get(DEFAULT_LOCATION);
         this.dep = Objects.requireNonNull(dep);
         this.delegate = Objects.requireNonNull(delegate);
     }
@@ -63,6 +59,6 @@ public class FileCache implements Resolver {
     }
 
     private Path toLocalPath(String dir, Version version) {
-        return root.resolve(dir).resolve(dep.name.replace(".", "/")).resolve(version.toString());
+        return JPXConfig.INSTANCE.home.resolve(dir).resolve(dep.name.replace(".", "/")).resolve(version.toString());
     }
 }

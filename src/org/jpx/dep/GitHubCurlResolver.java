@@ -54,6 +54,11 @@ public class GitHubCurlResolver {
     }
 
     public static void fetchZipball(String user, String project, String version, Path targetDir) {
+        try {
+            Files.createDirectories(targetDir);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         String url = String.format("https://github.com/%s/%s/tarball/%s/", user, project, version);
         SysCommand curl = SysCommand.builder("curl")
                 .addParameter("-sSL")
@@ -65,7 +70,6 @@ public class GitHubCurlResolver {
                 .build();
 
         Executor.execute(null, targetDir, Collections.singletonList(curl));
-
     }
 
     public static void main(String[] args) throws IOException {
