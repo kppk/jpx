@@ -4,13 +4,13 @@ import org.jpx.model.Manifest;
 import org.jpx.model.Pack;
 import org.jpx.sys.Executor;
 import org.jpx.sys.SysCommand;
+import org.jpx.util.IOUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -98,7 +98,7 @@ public final class JavaProject {
         List<SysCommand> cmds = new ArrayList<>();
         cmds.add(Compiler.getCompiler(jdk).compile(this));
         if (link && !isLibrary()) {
-            removeDir(binTargetDir);
+            IOUtil.removeDir(binTargetDir);
             cmds.add(Linker.getLinker(jdk).link(this));
         }
         Executor.execute(this, cmds);
@@ -106,26 +106,25 @@ public final class JavaProject {
     }
 
     public JavaProject clean() {
-        removeDir(targetDir);
+        IOUtil.removeDir(targetDir);
         return this;
     }
+
+    public JavaProject install() {
+        String dirs = name.replace(".", "/");
+        Path executable = binTargetDir.relativize(binTargetDir.resolve("bin").resolve(asBinaryName(name)));
+        new Installer().installBinary(dirs,
+                manifest.pack.version.toString(),
+                binTargetDir,
+                executable);
+        return this;
+    }
+
 
     public boolean isLibrary() {
         return manifest.pack.type == Pack.Type.LIBRARY;
     }
 
-    private static void removeDir(Path dir) {
-        if (!Files.exists(dir)) {
-            return;
-        }
-        try {
-            Files.walk(dir)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(p -> p.toFile().delete());
-        } catch (IOException e) {
-            throw new IllegalStateException("Can't delete directory", e);
-        }
-    }
 
     /**
      * Converts the provided name to module name.

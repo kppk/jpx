@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -57,4 +58,18 @@ public final class IOUtil {
             throw new IllegalStateException(e);
         }
     }
+
+    public static void removeDir(Path dir) {
+        if (!Files.exists(dir)) {
+            return;
+        }
+        try {
+            Files.walk(dir)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(p -> p.toFile().delete());
+        } catch (IOException e) {
+            throw new IllegalStateException("Can't delete directory", e);
+        }
+    }
+
 }

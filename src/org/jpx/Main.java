@@ -3,7 +3,6 @@ package org.jpx;
 import org.jpx.cli.App;
 import org.jpx.cli.BooleanFlag;
 import org.jpx.cli.Context;
-import org.jpx.cli.StringFlag;
 import org.jpx.cmd.Build;
 import org.jpx.cmd.Dep;
 import org.jpx.cmd.Setup;
@@ -48,7 +47,6 @@ public class Main {
                 .addFlag(FLAG_VERBOSE)
                 .build()
                 .execute(args);
-
     }
 
 

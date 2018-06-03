@@ -49,8 +49,12 @@ public final class Build {
                 Paths.get(manifest.basedir).toAbsolutePath())
         );
 
-        JavaProject.createNew(manifest)
+        JavaProject project = JavaProject.createNew(manifest)
                 .build(true);
+
+        if (install) {
+            project.install();
+        }
 
         ConsolePrinter.info(() -> "Finished");
     }
