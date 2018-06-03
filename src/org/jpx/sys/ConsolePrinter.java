@@ -36,9 +36,8 @@ public final class ConsolePrinter {
         print(Verbosity.VERBOSE, message);
     }
 
-
     public static void print(Verbosity level, Supplier<String> message) {
-        if (ConsolePrinter.level.value >= level.value) {
+        if (ConsolePrinter.level.value <= level.value) {
             System.out.println(message.get());
         }
     }
