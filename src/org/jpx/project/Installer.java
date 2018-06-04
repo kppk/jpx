@@ -10,7 +10,7 @@ import java.nio.file.Path;
 /**
  * TODO: Document this
  */
-public class Installer {
+final class Installer {
 
     private static final String BIN_DIR = "bin";
     private static final String PACKAGE_DIR = "binaries";
