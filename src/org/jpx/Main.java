@@ -31,6 +31,7 @@ public class Main {
             new Main().run(args);
         } catch (Exception e) {
             ConsolePrinter.error(e);
+            e.printStackTrace();
             System.exit(1);
         }
     }

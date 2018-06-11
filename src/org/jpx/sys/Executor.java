@@ -3,8 +3,11 @@ package org.jpx.sys;
 import org.jpx.project.JavaProject;
 import org.jpx.util.IOUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -52,7 +55,15 @@ public final class Executor {
         execute(null, null, Collections.singletonList(command));
     }
 
-    public static List<String> executeAndReadLines(SysCommand command) {
+    public static String executeAndReadAll(SysCommand command) {
+        try (Reader reader = executeAndRead(command)) {
+            return IOUtil.readAll(reader);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static Reader executeAndRead(SysCommand command) {
         File baseDir = new File(System.getProperty("java.io.tmpdir"));
         List<String> args = command.toListWithFullPath(null);
         try {
@@ -64,7 +75,7 @@ public final class Executor {
             if (code != 0) {
                 throw new IllegalStateException("SysCommand failed");
             }
-            return IOUtil.readAll(process);
+            return new BufferedReader(new InputStreamReader(process.getInputStream()));
         } catch (IOException | InterruptedException e) {
             throw new IllegalStateException(e);
         }

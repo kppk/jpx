@@ -26,18 +26,19 @@ public interface Linker {
         if (project.isLibrary()) {
             // TODO: handle this
         }
+        String module = JavaProject.asModuleName(project.name);
         return SysCommand.builder("jlink")
                 .addParameter("--module-path")
                 .addParameter(project.targetModDir.toString() + ":" + project.javaHome.resolve("jmods"))
                 .addParameter("--add-modules")
-                .addParameter(project.name)
+                .addParameter(module)
                 .addParameter("--output")
                 .addParameter(project.binTargetDir.toString())
                 .addParameter("--launcher")
                 .addParameter(String.format("%s=%s/%s.%s",
                         JavaProject.asBinaryName(project.name),
-                        JavaProject.asModuleName(project.name),
-                        JavaProject.asModuleName(project.name),
+                        module,
+                        module,
                         project.mainClass))
                 .build();
     };

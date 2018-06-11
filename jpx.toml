@@ -6,4 +6,4 @@ java_release = "8"
 type = "bin"
 
 [deps]
-'kppk.somelibrary' = '1.0.0'
+'kppk/somelibrary' = '1.0.0 <= v < 2.0.0'

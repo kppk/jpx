@@ -8,7 +8,6 @@ import org.jpx.model.Pack;
 import org.jpx.project.JavaProject;
 import org.jpx.sys.ConsolePrinter;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,8 +23,8 @@ import java.nio.file.Paths;
 public final class Setup {
 
     private static final StringFlag FLAG_NAME = StringFlag.builder()
-            .setName("name")
-            .setUsage("Set the resulting project name, defaults to the value of <path>")
+            .setName("repo")
+            .setUsage("Set the resulting project repo, defaults to the value of <path>")
             .build();
 
     private static final BooleanFlag FLAG_BINARY = BooleanFlag.builder()
@@ -66,13 +65,14 @@ public final class Setup {
             ))
             .build();
 
-    private static void newProject(String dir, String name, Pack.Type type) {
+    private static void newProject(String dir, String projectName, Pack.Type type) {
         try {
             Path dirPath = Paths.get(dir);
-            String projectName = name == null ? dir : name;
+            String n = projectName == null ? dir : projectName;
+            Pack.Name name = Pack.Name.parse(n);
             ConsolePrinter.info(() -> String.format("Setting up new *%s* project %s (%s)",
                     type.name,
-                    projectName,
+                    name,
                     dirPath.toAbsolutePath()));
 
             if (Files.exists(dirPath)) {
@@ -80,9 +80,9 @@ public final class Setup {
             }
 
             Files.createDirectories(dirPath);
-            writeToFile(dirPath.resolve(Manifest.NAME), manifest(projectName, type));
-            name = JavaProject.asModuleName(projectName);
-            Path pkgDir = dirPath.resolve(JavaProject.DIR_SRC).resolve(projectName).resolve(name.replaceAll("\\.", File.separator));
+            writeToFile(dirPath.resolve(Manifest.NAME), manifest(name, type));
+            String module = JavaProject.asModuleName(name);
+            Path pkgDir = dirPath.resolve(JavaProject.DIR_SRC).resolve(module).resolve(name.org).resolve(name.repo);
 
             Files.createDirectories(pkgDir);
             writeToFile(dirPath.resolve(".gitignore"), String.join("\n",
@@ -90,14 +90,14 @@ public final class Setup {
                     "target",
                     "lib",
                     ""));
-            writeToFile(dirPath.resolve(JavaProject.DIR_SRC).resolve(name).resolve("module-info.java"), String.join("\n",
-                    "module " + projectName + " {",
+            writeToFile(dirPath.resolve(JavaProject.DIR_SRC).resolve(module).resolve("module-info.java"), String.join("\n",
+                    "module " + module + " {",
                     "    requires kppk.somelibrary;",
                     "}",
                     ""));
             if (type == Pack.Type.LIBRARY) {
                 writeToFile(pkgDir.resolve("HelloLibrary.java"), String.join("\n",
-                        "package " + projectName + ";",
+                        "package " + module + ";",
                         "",
                         "public class HelloLibrary {",
                         "",
@@ -110,7 +110,7 @@ public final class Setup {
             }
             if (type == Pack.Type.BINARY) {
                 writeToFile(pkgDir.resolve("Main.java"), String.join("\n",
-                        "package " + projectName + ";",
+                        "package " + module + ";",
                         "import kppk.somelibrary.HelloLibrary;",
                         "",
                         "public class Main {",
@@ -138,26 +138,27 @@ public final class Setup {
         return binary ? Pack.Type.BINARY : Pack.Type.LIBRARY;
     }
 
-    private static void initProject(Path dir, String name, Pack.Type type) {
-        String projectName = name == null ? JavaProject.asModuleName(dir.toString()) : JavaProject.asModuleName(name);
+    private static void initProject(Path dir, String projectName, Pack.Type type) {
+        String n = projectName == null ? dir.toString() : projectName;
+        Pack.Name name = Pack.Name.parse(n);
         ConsolePrinter.info(() -> String.format("Initializing *%s* project %s (%s)",
                 type.name,
                 name,
                 dir.toAbsolutePath()));
-        writeToFile(dir.resolve(Manifest.NAME), manifest(projectName, type));
+        writeToFile(dir.resolve(Manifest.NAME), manifest(name, type));
         ConsolePrinter.info(() -> "Finished");
     }
 
-    private static String manifest(String name, Pack.Type type) {
+    private static String manifest(Pack.Name name, Pack.Type type) {
         return String.join("\n",
                 "[pack]",
-                "name = '" + JavaProject.asModuleName(name) + "'",
+                "name = '" + name.toString() + "'",
                 "version = '1.0.0'",
                 "type = '" + type.name + "'",
                 "java_release = '9'",
                 "",
                 "[deps]",
-                "'kppk.somelibrary' = '1.0.0 <= v < 2.0.0'"
+                "'kppk/somelibrary' = '1.0.0 <= v < 2.0.0'"
         );
     }
 

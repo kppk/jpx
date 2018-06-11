@@ -31,7 +31,7 @@ public final class Graph {
                     return doResolve(m, r);
                 })
                 .collect(Collectors.toList());
-        return new Dependency(mf.pack.name, mf.pack.version, dependencies, resolvedBy);
+        return new Dependency(mf.pack.name.toString(), mf.pack.version, dependencies, resolvedBy);
     }
 
     public void printTree() {

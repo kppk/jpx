@@ -37,12 +37,12 @@ public final class JavaProject {
     final JDK jdk;
     public final Path javaHome;
     final Path libDir;
-    final String name;
+    final Pack.Name name;
     final String binaryName;
     final String mainClass;
 
     private JavaProject(Manifest manifest,
-                        String name,
+                        Pack.Name name,
                         Path baseDir,
                         JDK jdk,
                         Path javaHome) {
@@ -63,9 +63,9 @@ public final class JavaProject {
     public static JavaProject createNew(Manifest mf) {
         Objects.requireNonNull(mf);
 
-        // todo: validate pack name
+        // todo: validate pack repo
         // todo: validate basedir
-        String name = mf.pack.name;
+        Pack.Name name = mf.pack.name;
         Path baseDir = Paths.get(mf.basedir);
         JDK jdk = JDK.releaseOf(mf.pack.javaRelease);
         Path javaHome = JavaHomeSupplier.getJavaHomeSupplier(jdk).get();
@@ -79,7 +79,7 @@ public final class JavaProject {
 
             Stream<Path> libMods = Stream.empty();
             if (Files.exists(libDir)) {
-                libMods = Files.list(libDir)
+                libMods = Files.walk(libDir, 2)
                         .filter(p -> Files.isDirectory(p) && Files.exists(p.resolve(DIR_SRC)))
                         .map(p -> p.resolve(DIR_SRC));
             }
@@ -111,7 +111,7 @@ public final class JavaProject {
     }
 
     public JavaProject install() {
-        String dirs = name.replace(".", "/");
+        String dirs = name.toString();
         Path executable = binTargetDir.relativize(binTargetDir.resolve("bin").resolve(asBinaryName(name)));
         new Installer().installBinary(dirs,
                 manifest.pack.version.toString(),
@@ -126,26 +126,16 @@ public final class JavaProject {
     }
 
 
-    /**
-     * Converts the provided name to module name.
-     * <p>
-     * Example:
-     * <p>
-     * my-great-module -> my.great.module
-     * my.great-module -> my.great.module
-     * MyModule -> mymodule
-     *
-     * @param name
-     * @return
-     */
-    public static String asModuleName(String name) {
+    public static String asModuleName(Pack.Name name) {
         Objects.requireNonNull(name);
-        return name.replaceAll("-", ".").replaceAll("_", ".").toLowerCase();
+
+        return name.org + "." + name.repo;
     }
 
-    public static String asBinaryName(String name) {
+    public static String asBinaryName(Pack.Name name) {
         Objects.requireNonNull(name);
-        return name.replace(".", "-");
+
+        return name.org + "-" + name.repo;
     }
 
 }

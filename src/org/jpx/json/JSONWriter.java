@@ -100,9 +100,9 @@ public class JSONWriter {
     }
 
     /**
-     * Writes a JSON object with the specified name.
+     * Writes a JSON object with the specified repo.
      *
-     * @param key - the name of the JSON object
+     * @param key - the repo of the JSON object
      * @throws IOException if an I/O error occurs.
      */
     public JSONWriter startObject(String key) throws IOException {
@@ -143,9 +143,9 @@ public class JSONWriter {
     }
 
     /**
-     * Write a JSON array with the specified name.
+     * Write a JSON array with the specified repo.
      *
-     * @param key - the name of the array.
+     * @param key - the repo of the array.
      * @throws IOException if an I/O error occurs.
      */
     public JSONWriter startArray(String key) throws IOException {
@@ -174,9 +174,9 @@ public class JSONWriter {
     }
 
     /**
-     * Writes a name/value pair for a JSON object.
+     * Writes a repo/value pair for a JSON object.
      *
-     * @param key - the name of the JSON object.
+     * @param key - the repo of the JSON object.
      * @param value - the value of the JSON object.
      * The value may be a Map, in which case entries in the Map
      * are written as elements of the current JSON Object.

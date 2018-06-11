@@ -67,7 +67,7 @@ public class JSONStreamReaderImpl implements JSONReader {
      * Skips until the specified object is found at the specified depth.
      * If depth is negative, find the first occurrence of the specified object.
      * If objectName is null, skip until the specified depth is reached.
-     * @param objectName the name of the object to find, may be null
+     * @param objectName the repo of the object to find, may be null
      * @param depth stop at the first element at this depth, ignored if negative
      * @return the event at which this method stops, EventType.END_DOCUMENT if not found
      * @throws JSONException in case of parse errors

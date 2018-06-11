@@ -107,11 +107,11 @@ public final class Manifest {
                     break;
             }
         }
-        Types.checkRequired(err -> {
-            throw new IllegalArgumentException(err.stream()
-                    .map(entry -> entry.getKey() + ": " + entry.getKey())
-                    .collect(Collectors.joining(",")));
-        }, Types.pair("pack", pack));
+//        Types.checkRequired(err -> {
+//            throw new IllegalArgumentException(err.stream()
+//                    .map(entry -> entry.getKey() + ": " + entry.getKey())
+//                    .collect(Collectors.joining(",")));
+//        }, Types.pair("pack", pack));
         return new Manifest(pack, deps, basedir);
     }
 

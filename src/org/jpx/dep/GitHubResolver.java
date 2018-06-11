@@ -13,29 +13,20 @@ import java.util.stream.Collectors;
 /**
  * TODO: Document this
  */
-public final class GitHubResolver implements Resolver {
+final class GitHubResolver implements Resolver {
 
-    private final String user;
-    private final String project;
+    public static final String SELECTOR = "github";
+
+    private final Dep.Name name;
 
 
     GitHubResolver(Dep dep) {
-        String name = dep.name;
-        int idx = name.indexOf(".");
-        if (idx == -1) {
-            throw new IllegalArgumentException("Invalid name, missing '.'");
-        }
-        user = name.substring(0, idx);
-        project = name.substring(idx + 1);
-    }
-
-    static boolean canResolve(Dep dep) {
-        return true;
+        name = dep.name;
     }
 
     @Override
     public List<Version> listVersions() {
-        return GitHubCurlResolver.getTags(user, project).stream()
+        return GitHubCurlClient.getTags(name.org, name.repo).stream()
                 .map(s -> {
                     try {
                         return new Version(s);
@@ -50,11 +41,11 @@ public final class GitHubResolver implements Resolver {
 
     @Override
     public Manifest getManifest(Version version) {
-        return GitHubCurlResolver.getManifest(user, project, version.toString());
+        return GitHubCurlClient.getManifest(name.org, name.repo, version.toString());
     }
 
     @Override
     public void fetch(Version version, Path targetDir) {
-        GitHubCurlResolver.fetchZipball(user, project, version.toString(), targetDir);
+        GitHubCurlClient.fetch(name.org, name.repo, version.toString(), targetDir);
     }
 }

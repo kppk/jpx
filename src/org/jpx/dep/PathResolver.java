@@ -1,8 +1,6 @@
 package org.jpx.dep;
 
-import org.jpx.model.Dep;
 import org.jpx.model.Manifest;
-import org.jpx.util.Types;
 import org.jpx.version.Version;
 
 import java.net.MalformedURLException;
@@ -20,24 +18,16 @@ public final class PathResolver implements Resolver {
 
     private final Path path;
 
-    PathResolver(Manifest mf, Dep dep) {
-        String pathString = Types.safeCast(dep.values.get(KEY_PATH), String.class);
-        if (pathString == null) {
-            throw new IllegalArgumentException("Missing path");
-        }
-        path = Paths.get(mf.basedir).resolve(Paths.get(pathString));
-    }
+//    PathResolver(Manifest mf, Dep dep) {
+//        String pathString = Types.safeCast(dep.values.get(KEY_PATH), String.class);
+//        if (pathString == null) {
+//            throw new IllegalArgumentException("Missing path");
+//        }
+//        path = Paths.get(mf.basedir).resolve(Paths.get(pathString));
+//    }
 
     PathResolver(Path path) {
         this.path = path;
-    }
-
-    public static boolean canResolve(Dep dep) {
-        return dep.values.containsKey(KEY_PATH);
-    }
-
-    public static boolean canResolve(String string) {
-        return string.startsWith(KEY_PATH + "+");
     }
 
     @Override
@@ -46,16 +36,14 @@ public final class PathResolver implements Resolver {
     }
 
     public static PathResolver fromString(String string) {
-        if (canResolve(string)) {
-            try {
-                URL url = new URL(string.substring(5));
-                return new PathResolver(Paths.get(url.getPath()));
-            } catch (MalformedURLException e) {
-                throw new IllegalArgumentException(e);
-            }
+        try {
+            URL url = new URL(string.substring(5));
+            return new PathResolver(Paths.get(url.getPath()));
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
         }
-        return null;
     }
+
 
     @Override
     public List<Version> listVersions() {

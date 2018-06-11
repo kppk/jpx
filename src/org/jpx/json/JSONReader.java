@@ -126,9 +126,9 @@ public interface JSONReader extends Iterable<JSONReader.EventType>, Iterator<JSO
     };
 
     /**
-     * The name of the current JSON object.
+     * The repo of the current JSON object.
      *
-     * @return the name of a JSON object.
+     * @return the repo of a JSON object.
      */
     public String key();
 
@@ -144,7 +144,7 @@ public interface JSONReader extends Iterable<JSONReader.EventType>, Iterator<JSO
      * If depth is negative, find the first occurrence of the specified object.
      * If objectName is null, skip until the specified depth is reached.
      *
-     * @param key the name of the object to find, may be null
+     * @param key the repo of the object to find, may be null
      * @param depth stop at the first element at this depth, ignored if negative
      * @return the event at which this method stops, EventType.END_DOCUMENT if not found
      */

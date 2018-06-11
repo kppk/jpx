@@ -28,7 +28,7 @@ public final class Dependency {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Dependency{");
-        sb.append("name='").append(name).append('\'');
+        sb.append("repo='").append(name).append('\'');
         sb.append(", version=").append(version);
         sb.append(", dependencies=").append(dependencies);
         sb.append('}');
@@ -37,7 +37,7 @@ public final class Dependency {
 
     public static Dependency read(Map<String, Object> vals) {
         try {
-            String name = Types.safeCast(vals.get("name"), String.class);
+            String name = Types.safeCast(vals.get("repo"), String.class);
             Version version = new Version(Types.safeCast(vals.get("version"), String.class));
             Object source = vals.get("source");
             Resolver resolver = null;
@@ -53,7 +53,7 @@ public final class Dependency {
 
     public Map<String, ?> write() {
         Map<String, String> vals = new HashMap<>();
-        vals.put("name", name);
+        vals.put("repo", name);
         vals.put("version", version.toString());
         if (resolver != null) {
             vals.put("source", resolver.toString());

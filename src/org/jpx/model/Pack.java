@@ -5,7 +5,6 @@ import org.jpx.version.Version;
 
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,7 +16,6 @@ public final class Pack {
     public enum Type {
         LIBRARY("lib"),
         BINARY("bin");
-
 
         public final String name;
 
@@ -36,16 +34,14 @@ public final class Pack {
 
     }
 
-    public final String name;
+    public final Name name;
     public final Version version;
-    public final List<String> authors;
     public final Type type;
     public final String javaRelease;
 
-    private Pack(String name, Version version, List<String> authors, Type type, String javaRelease) {
+    private Pack(Name name, Version version, Type type, String javaRelease) {
         this.name = name;
         this.version = version;
-        this.authors = authors;
         this.type = type;
         this.javaRelease = javaRelease;
     }
@@ -55,7 +51,6 @@ public final class Pack {
         final StringBuilder sb = new StringBuilder("Pack{");
         sb.append("name='").append(name).append('\'');
         sb.append(", version=").append(version);
-        sb.append(", authors=").append(authors);
         sb.append('}');
         return sb.toString();
     }
@@ -67,27 +62,24 @@ public final class Pack {
         Pack pack = (Pack) o;
         return Objects.equals(name, pack.name) &&
                 Objects.equals(version, pack.version) &&
-                Objects.equals(authors, pack.authors) &&
                 type == pack.type &&
                 Objects.equals(javaRelease, pack.javaRelease);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(name, version, authors, type, javaRelease);
+        return Objects.hash(name, version, type, javaRelease);
     }
 
     static Pack read(Map<String, Object> map) {
-        String name = null;
+        Name name = null;
         Version version = null;
-        List<String> authors = null;
         Type type = null;
         String javaRelease = null;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             switch (entry.getKey()) {
                 case "name":
-                    name = Types.safeCast(entry.getValue(), String.class);
+                    name = Name.parse(Types.safeCast(entry.getValue(), String.class));
                     break;
                 case "version":
                     String versionString = Types.safeCast(entry.getValue(), String.class);
@@ -96,9 +88,6 @@ public final class Pack {
                     } catch (ParseException e) {
                         throw new ManifestException(e);
                     }
-                    break;
-                case "authors":
-                    authors = Types.safeCast(entry.getValue(), List.class);
                     break;
                 case "java_release":
                     javaRelease = Types.safeCast(entry.getValue(), String.class);
@@ -113,17 +102,60 @@ public final class Pack {
 
             }
         }
-        return new Pack(name, version, authors, type, javaRelease);
+        return new Pack(name, version, type, javaRelease);
     }
 
     Map<String, Object> write() {
         Map<String, Object> vals = new HashMap<>();
-        vals.put("name", name);
+        vals.put("name", name.toString());
         vals.put("version", version.toString());
-        vals.put("authors", authors);
         vals.put("java_release", javaRelease);
         vals.put("type", type.name);
         return vals;
+    }
+
+    public static final class Name {
+        public final String org;
+        public final String repo;
+
+        private static final String NOT_ALFANUMERIC = "[^A-Za-z0-9]";
+
+        private Name(String org, String repo) {
+            this.org = org;
+            this.repo = repo;
+        }
+
+        public static Name parse(String name) {
+            Objects.requireNonNull(name);
+
+            String[] splits = name.split("/");
+            if (splits.length != 2) {
+                throw new IllegalArgumentException("Invalid pack repo '" + name + "', repo must be in 'org/repo'");
+            }
+            String org = splits[0].replaceAll(NOT_ALFANUMERIC, "").trim();
+            String repo = splits[1].replaceAll(NOT_ALFANUMERIC, "").trim();
+            return new Name(org, repo);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Name name = (Name) o;
+            return Objects.equals(org, name.org) &&
+                    Objects.equals(repo, name.repo);
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(org, repo);
+        }
+
+        @Override
+        public String toString() {
+            return org + "/" + repo;
+        }
     }
 
 }

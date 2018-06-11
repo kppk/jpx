@@ -472,7 +472,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Get the object node's named value as a String.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @return the value as String
      */
     public String getString(String key) {
@@ -492,7 +492,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Get the object node's named value as a Boolean.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @return the value as Boolean
      */
     public Boolean getBoolean(String key) {
@@ -512,7 +512,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Get the object node's named value as a Number.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @return the value as Number
      */
     public Number getNumber(String key) {
@@ -532,7 +532,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Get if the object node's named value is null.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @return true if the value is null, false otherwise
      */
     public boolean isNull(String key) {
@@ -592,7 +592,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set child object of this node.
      *
-     * @param key the name of the child
+     * @param key the repo of the child
      * @param value the node containing the new values
      * @return the old value, null if there was no value
      */
@@ -614,7 +614,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set value of this node as String.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @param value the new value
      * @return the old value, null if there was no value
      */
@@ -636,7 +636,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set value of this node as Boolean.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @param value the new value
      * @return the old value, null if there was no value
      */
@@ -658,7 +658,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set value of this node as Number.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @param value the new value
      * @return the old value, null if there was no value
      */
@@ -680,7 +680,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set value of this node to null.
      *
-     * @param key the name of the value
+     * @param key the repo of the value
      * @return the old value, null if there was no value
      */
     public Object setNull(String key) {

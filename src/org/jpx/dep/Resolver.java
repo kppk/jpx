@@ -32,7 +32,7 @@ public interface Resolver {
 
     static Resolver thatResolves(Manifest mf, Dep dep) {
 
-        if (GitHubResolver.canResolve(dep)) {
+        if (dep.selectorName.equals(GitHubResolver.SELECTOR)) {
             return new FileCache(dep, new GitHubResolver(dep));
         }
 
@@ -41,9 +41,6 @@ public interface Resolver {
 
     static Resolver thatResolves(String string) {
 
-        if (PathResolver.canResolve(string)) {
-            return PathResolver.fromString(string);
-        }
 
         throw new IllegalArgumentException("Don't know which resolver to use");
     }

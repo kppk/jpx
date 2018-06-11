@@ -55,10 +55,10 @@ public class FileCache implements Resolver {
         if (!Files.exists(path.resolve(Manifest.NAME))) {
             delegate.fetch(version, path);
         }
-        IOUtil.copy(path, targetDir.resolve(dep.name));
+        IOUtil.copy(path, targetDir.resolve(dep.name.org).resolve(dep.name.repo));
     }
 
     private Path toLocalPath(String dir, Version version) {
-        return JPXConfig.INSTANCE.home.resolve(dir).resolve(dep.name.replace(".", "/")).resolve(version.toString());
+        return JPXConfig.INSTANCE.home.resolve(dir).resolve(dep.name.org).resolve(dep.name.repo).resolve(version.toString());
     }
 }

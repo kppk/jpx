@@ -60,7 +60,7 @@ public final class BooleanFlag implements Flag<Boolean> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("BooleanFlag{");
-        sb.append("name='").append(name).append('\'');
+        sb.append("repo='").append(name).append('\'');
         sb.append(", shortName='").append(shortName).append('\'');
         sb.append(", usage='").append(usage).append('\'');
         sb.append(", defaultValue=").append(defaultValue);

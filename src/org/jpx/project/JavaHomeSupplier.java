@@ -1,8 +1,8 @@
 package org.jpx.project;
 
-import org.jpx.util.IOUtil;
+import org.jpx.sys.Executor;
+import org.jpx.sys.SysCommand;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Function;
@@ -19,20 +19,15 @@ public interface JavaHomeSupplier extends Supplier<Path> {
 
     Function<JDK, Path> MACOS_JAVA_HOME_PROVIDER = jdk -> {
         String versionString = (jdk == JDK.v8) ? "1.8" : jdk.release;
-        try {
-            Process process = new ProcessBuilder()
-                    .command("/usr/libexec/java_home",
-                            "-v",
-                            versionString)
-                    .redirectErrorStream(false)
-                    .start();
-            return IOUtil.readAll(process).stream()
-                    .findFirst()
-                    .map(Paths::get)
-                    .orElseThrow(() -> new IllegalArgumentException("Can't find java home for JDK " + jdk.release));
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
+        SysCommand javaHome = SysCommand.builder("/usr/libexec/java_home")
+                .addParameter("-v")
+                .addParameter(versionString)
+                .build();
+        String ret = Executor.executeAndReadAll(javaHome);
+        if (ret.length() == 0) {
+            throw new IllegalArgumentException("Can't find java home for JDK " + jdk.release);
         }
+        return Paths.get(ret.trim());
     };
 
 

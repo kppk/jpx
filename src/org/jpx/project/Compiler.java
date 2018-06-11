@@ -29,13 +29,14 @@ interface Compiler {
         try {
             Files.createDirectories(project.targetModDir);
             String mods = project.getModuleDirs().stream().collect(Collectors.joining(File.pathSeparator));
+            String module = JavaProject.asModuleName(project.name);
             SysCommand.Builder builder = SysCommand.builder("javac")
                     .addParameter("-d")
                     .addParameter(project.targetModDir.toString())
                     .addParameter("--module-source-path")
                     .addParameter(mods)
                     .addParameter("--module")
-                    .addParameter(project.name);
+                    .addParameter(module);
             return builder.build();
         } catch (IOException e) {
             throw new IllegalStateException(e);

@@ -28,7 +28,7 @@ public class ManifestTest {
 //        graph.printTree();
 //        System.out.println("flatten:");
 //        graph.flatten()
-//                .forEach(dependency -> System.out.println("- " + dependency.name + ":" + dependency.version + " <-- " + dependency.resolver));
+//                .forEach(dependency -> System.out.println("- " + dependency.repo + ":" + dependency.version + " <-- " + dependency.resolver));
 //
 //        System.out.println("HASH: " + Objects.hash(manifest.deps));
     }

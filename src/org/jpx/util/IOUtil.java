@@ -1,13 +1,10 @@
 package org.jpx.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * TODO: Document this
@@ -16,23 +13,14 @@ public final class IOUtil {
     private IOUtil() {
     }
 
-    public static List<String> readAll(Process process) {
-        List<String> out = new ArrayList<>();
-
-        try (BufferedReader processOutputReader = new BufferedReader(
-                new InputStreamReader(process.getInputStream()))) {
-            String readLine;
-
-            while ((readLine = processOutputReader.readLine()) != null) {
-                out.add(readLine);
-            }
-            process.waitFor();
-
-        } catch (IOException | InterruptedException e) {
-            throw new IllegalStateException(e);
+    public static String readAll(Reader reader) throws IOException {
+        char[] arr = new char[8 * 1024];
+        StringBuilder builder = new StringBuilder();
+        int numCharsRead;
+        while ((numCharsRead = reader.read(arr, 0, arr.length)) != -1) {
+            builder.append(arr, 0, numCharsRead);
         }
-
-        return out;
+        return builder.toString();
     }
 
     public static void copy(Path src, Path dest) {
