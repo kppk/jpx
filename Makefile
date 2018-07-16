@@ -1,4 +1,4 @@
-JAVA_FILES:=$(shell find src -name '*.java'| paste -sd ' ' -)
+JAVA_FILES:=$(shell find java/kppk.jpx -name '*.java'| paste -sd ' ' -)
 
 ifndef GRAAL_HOME
 $(error GRAAL_HOME is not set, install GraalVM from https://www.graalvm.org/ and set GRAAL_HOME)
@@ -9,12 +9,11 @@ JAVAC:=$(GRAAL_HOME)/bin/javac
 
 .PHONY: javac
 javac:
-	@$(JAVAC) -d target -sourcepath src $(JAVA_FILES)
+	@$(JAVAC) -d target -sourcepath java/kppk.jpx $(JAVA_FILES)
 
 
 .PHOHY: native
 native: javac
-
-	$(NATIVE) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -cp target org.jpx.Main
+	$(NATIVE) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -cp target kppk.jpx.Main
 	mkdir -p ./bin
 	mv jpx ./bin/jpx

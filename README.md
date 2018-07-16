@@ -56,7 +56,7 @@ Main ideas:
     
 ###packaging
 
-    - possible artifacts: library -> jar, application -> native (graal or jlink)
+    - possible artifact: application -> native (graal or jlink)
     - allow application installation from repository (download source, build to ~/.jpx/bin), jpx install    
     
 #Commands
@@ -69,11 +69,4 @@ jpx install         - install all dependencies to `lib` directory
 jpx add             - add new dependency to jpx.toml and install it to `lib` directory
     
     
-      
-
-
-    
-#Implementation details:
-
-- module name: "org.some.module-name"    
     
