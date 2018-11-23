@@ -57,8 +57,11 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
     - possible artifact: application -> native (graal or jlink)
     - allow application installation from repository (download source, build to ~/.jpx/bin), jpx install
 
-### Commands
+### INSTALL
 
+`curl -LSs https://raw.githubusercontent.com/kppk/jpx/master/install | sh`
+
+### Commands
 
 `jpx new <project>`   - create new project in provided directory
 
