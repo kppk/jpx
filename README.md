@@ -61,10 +61,15 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
 
 
 `jpx new <project>`   - create new project in provided directory
+
 `jpx init`            - init project in current directory
+
 `jpx build`           - build the project
+
 `jpx clean`           - remove target directory
+
 `jpx install`         - install all dependencies to `lib` directory
+
 `jpx add`             - add new dependency to jpx.toml and install it to `lib` directory
 
 
