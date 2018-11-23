@@ -45,7 +45,7 @@ case "$(uname)" in
     $sh_c "mkdir -p  ~/.jpx/bin"
     $sh_c "mv /tmp/jpx_mac ~/.jpx/bin/jpx"
     $sh_c "chmod +x ~/.jpx/bin/jpx"
-    echo "Add `~/.jpx/bin` directory to your PATH"
+    echo "*** Add '~/.jpx/bin' directory to your PATH ***"
     echo "DONE"
     ;;
   WindowsNT)

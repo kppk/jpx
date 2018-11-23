@@ -59,7 +59,7 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
 
 ### INSTALL
 
-`curl -LSs https://raw.githubusercontent.com/kppk/jpx/master/install | sh`
+`curl -LSs https://raw.githubusercontent.com/kppk/jpx/master/install.sh | sh`
 
 ### Commands
 
