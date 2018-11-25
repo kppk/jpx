@@ -8,9 +8,11 @@ NATIVE:=$(GRAAL_HOME)/bin/native-image
 JAVAC:=$(GRAAL_HOME)/bin/javac
 
 .PHONY: javac
-javac:
+javac: target
 	@$(JAVAC) -d target -sourcepath java/kppk.jpx $(JAVA_FILES)
 
+target:
+	mkdir target
 
 .PHONY: native
 native: javac
