@@ -1,9 +1,9 @@
 language: minimal
+os: osx
 sudo: required
 services:
   - docker
 script:
   - docker run --rm -v $(pwd):/src -w /src oracle/graalvm-ce:1.0.0-rc9 /bin/bash -c 'export GRAAL_HOME=$JAVA_HOME && export NATIVE_FLAGS=--static && make native'
-  - ls -la
-  - ls -la ./bin
-  - sudo mv ./bin/jpx ./bin/jpx_linux
+  - sudo chown travis:travis ./bin/jpx
+  - mv ./bin/jpx ./bin/jpx_linux
