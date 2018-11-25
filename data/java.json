@@ -1,0 +1,14 @@
+{
+  "jdk": {
+    "9": {
+      "repo": "https://github.com/AdoptOpenJDK/openjdk9-binaries"
+    },
+    "10": {
+      "repo": "https://github.com/AdoptOpenJDK/openjdk10-releases"
+    },
+    "11": {
+      "repo": "https://github.com/AdoptOpenJDK/openjdk11-binaries"
+    },
+    "latest": "11"
+  }
+}
