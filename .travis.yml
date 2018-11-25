@@ -13,14 +13,15 @@ matrix:
         - GRAAL_ARCH=linux
         - NATIVE_SUFFIX=_linux
         - NATIVE_FLAGS=--static
-        - GRAAL_HOME=$(pwd)/graalvm-ce-${GRAAL_VERSION}/
     - os: osx
       env:
         - GRAAL_ARCH=macos
         - NATIVE_SUFFIX=_macos
-        - GRAAL_HOME=$(pwd)/graalvm-ce-${GRAAL_VERSION}/Contents/Home/
+        - GRAAL_HOME_SUFFIX=Contents/Home/
 
 script:
   - export GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-${GRAAL_VERSION}/graalvm-ce-${GRAAL_VERSION}-${GRAAL_ARCH}-amd64.tar.gz
   - curl --fail --silent --location --retry 3 ${GRAALVM_PKG} | gunzip | tar x -C ./
+  - find .
+  - export GRAAL_HOME=$(pwd)/graalvm-ce-${GRAAL_VERSION}/${GRAAL_HOME_SUFFIX}
   - make native
