@@ -37,13 +37,17 @@ url='https://github.com/kppk/jpx/releases/download'
 # perform some very rudimentary platform detection
 case "$(uname)" in
   Linux)
-    echo "Linux support comming soon..."
-    exit 1
+    $sh_c "$curl /tmp/jpx_linux $url/$version/jpx_linux"
+    $sh_c "mkdir -p  ~/.jpx/bin"
+    $sh_c "mv /tmp/jpx_linux ~/.jpx/bin/jpx"
+    $sh_c "chmod +x ~/.jpx/bin/jpx"
+    echo "*** Add '~/.jpx/bin' directory to your PATH ***"
+    echo "DONE"
     ;;
   Darwin)
-    $sh_c "$curl /tmp/jpx_mac $url/$version/jpx_mac"
+    $sh_c "$curl /tmp/jpx_macos $url/$version/jpx_macos"
     $sh_c "mkdir -p  ~/.jpx/bin"
-    $sh_c "mv /tmp/jpx_mac ~/.jpx/bin/jpx"
+    $sh_c "mv /tmp/jpx_macos ~/.jpx/bin/jpx"
     $sh_c "chmod +x ~/.jpx/bin/jpx"
     echo "*** Add '~/.jpx/bin' directory to your PATH ***"
     echo "DONE"
