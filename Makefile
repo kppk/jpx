@@ -12,8 +12,8 @@ javac:
 	@$(JAVAC) -d target -sourcepath java/kppk.jpx $(JAVA_FILES)
 
 
-.PHOHY: native
+.PHONY: native
 native: javac
-	$(NATIVE) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -cp target kppk.jpx.Main
+	$(NATIVE) $(NATIVE_FLAGS) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -cp target kppk.jpx.Main
 	mkdir -p ./bin
 	mv jpx ./bin/jpx

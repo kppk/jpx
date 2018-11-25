@@ -1,0 +1,7 @@
+language: minimal
+sudo: required
+services:
+  - docker
+script:
+  - docker run --rm -v $(pwd):/src -w /src oracle/graalvm-ce:1.0.0-rc9 /bin/bash -c 'export GRAAL_HOME=$JAVA_HOME && export NATIVE_FLAGS=--static && make native'
+  - mv ./bin/jpx ./bin/jpx_linux
