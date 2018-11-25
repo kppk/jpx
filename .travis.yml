@@ -1,9 +1,11 @@
 language: minimal
-os: osx
 sudo: required
 services:
   - docker
+matrix:
+  include:
+    - os: linux
+    - os: osx
 script:
-  - docker run --rm -v $(pwd):/src -w /src oracle/graalvm-ce:1.0.0-rc9 /bin/bash -c 'export GRAAL_HOME=$JAVA_HOME && export NATIVE_FLAGS=--static && make native'
-  - sudo chown travis:travis ./bin/jpx
-  - mv ./bin/jpx ./bin/jpx_linux
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run --rm -v $(pwd):/src -w /src oracle/graalvm-ce:1.0.0-rc9 /bin/bash -c 'export GRAAL_HOME=$JAVA_HOME && export NATIVE_SUFFIX=_linux && export NATIVE_FLAGS=--static && make native'; sudo chown travis:travis ./bin/*; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export NATIVE_SUFFIX=_mac && make native; fi

@@ -18,4 +18,4 @@ target:
 native: javac
 	$(NATIVE) $(NATIVE_FLAGS) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime -cp target kppk.jpx.Main
 	mkdir -p ./bin
-	mv jpx ./bin/jpx
+	mv jpx ./bin/jpx$(NATIVE_SUFFIX)
