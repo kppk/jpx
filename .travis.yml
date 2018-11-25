@@ -1,23 +1,26 @@
 language: minimal
 sudo: required
-services:
-  - docker
-matrix:
-  include:
-    - os: linux
-    - os: osx
+
 env:
   global:
     - GRAAL_VERSION="1.0.0-rc9"
-    - JDK8_UPDATE_VERSION="192"
+
+matrix:
+  fast_finish: true
+  include:
+    - os: linux
+      env:
+        - GRAAL_ARCH=linux
+        - NATIVE_SUFFIX=_linux
+        - NATIVE_FLAGS=--static
+        - GRAAL_HOME=$(pwd)/graalvm-ce-${GRAAL_VERSION}/
+    - os: osx
+      env:
+        - GRAAL_ARCH=macos
+        - NATIVE_SUFFIX=_macos
+        - GRAAL_HOME=$(pwd)/graalvm-ce-${GRAAL_VERSION}/Contents/Home/
+
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run --rm -v $(pwd):/src -w /src oracle/graalvm-ce:1.0.0-rc9 /bin/bash -c 'export GRAAL_HOME=$JAVA_HOME && export NATIVE_SUFFIX=_linux && export NATIVE_FLAGS=--static && make native'; sudo chown travis:travis ./bin/*; fi
-  - |
-      if [[ "$TRAVIS_OS_NAME" == "osx" ]]
-      then
-        export GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-${GRAAL_VERSION}/graalvm-ce-${GRAAL_VERSION}-macos-amd64.tar.gz
-        curl --fail --silent --location --retry 3 ${GRAALVM_PKG} | gunzip | tar x -C ./
-        export GRAAL_HOME=$(pwd)/graalvm-ce-${GRAAL_VERSION}/Contents/Home/
-        export NATIVE_SUFFIX=_macos
-        make native
-      fi
+  - export GRAALVM_PKG=https://github.com/oracle/graal/releases/download/vm-${GRAAL_VERSION}/graalvm-ce-${GRAAL_VERSION}-${GRAAL_ARCH}-amd64.tar.gz
+  - curl --fail --silent --location --retry 3 ${GRAALVM_PKG} | gunzip | tar x -C ./
+  - make native
