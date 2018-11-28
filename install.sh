@@ -3,8 +3,6 @@ set -e
 
 # Install script to install jpx
 
-version=`curl --silent https://api.github.com/repos/kppk/jpx/releases/latest  | grep tag_name | cut -f 2 -d : | cut -f 2 -d '"'`
-
 command_exists() {
   command -v "$@" > /dev/null 2>&1
 }
@@ -33,6 +31,7 @@ else
 fi
 
 url='https://github.com/kppk/jpx/releases/download'
+version=`curl --silent https://api.github.com/repos/kppk/jpx/releases/latest  | grep tag_name | cut -f 2 -d : | cut -f 2 -d '"'`
 
 # perform some very rudimentary platform detection
 case "$(uname)" in
