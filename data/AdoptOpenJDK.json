@@ -1,6 +1,6 @@
 {
   "9": "https://api.github.com/repos/AdoptOpenJDK/openjdk9-binaries/releases/latest",
-  "10": "https://api.github.com/repos/AdoptOpenJDK/openjdk10-binaries/releases/latest",
+  "10": "https://raw.githubusercontent.com/AdoptOpenJDK/openjdk10-binaries/master/latest_release.json",
   "11": "https://api.github.com/repos/AdoptOpenJDK/openjdk11-binaries/releases/latest",
   "latest": "11"
 }
