@@ -1,5 +1,6 @@
 package kppk.jpx.project;
 
+import kppk.jpx.jdk.JdkInstaller;
 import kppk.jpx.model.Manifest;
 import kppk.jpx.model.Pack;
 import kppk.jpx.sys.Executor;
@@ -34,7 +35,6 @@ public final class JavaProject {
     final Path srcDir;
     final Path binTargetDir;
     final Manifest manifest;
-    final JDK jdk;
     public final Path javaHome;
     final Path libDir;
     final Pack.Name name;
@@ -44,13 +44,11 @@ public final class JavaProject {
     private JavaProject(Manifest manifest,
                         Pack.Name name,
                         Path baseDir,
-                        JDK jdk,
                         Path javaHome) {
         this.baseDir = baseDir;
         this.name = name;
         this.manifest = manifest;
         this.libDir = baseDir.resolve(DIR_LIB);
-        this.jdk = jdk;
         this.javaHome = javaHome;
         this.targetDir = baseDir.resolve(DIR_TARGET);
         this.targetModDir = targetDir.resolve(DIR_MOD);
@@ -67,10 +65,9 @@ public final class JavaProject {
         // todo: validate basedir
         Pack.Name name = mf.pack.name;
         Path baseDir = Paths.get(mf.basedir);
-        JDK jdk = JDK.releaseOf(mf.pack.javaRelease);
-        Path javaHome = JavaHomeSupplier.getJavaHomeSupplier(jdk).get();
+        Path javaHome = JdkInstaller.getJavaHomeOrInstall(mf.pack.javaRelease);
 
-        return new JavaProject(mf, name, baseDir, jdk, javaHome);
+        return new JavaProject(mf, name, baseDir, javaHome);
     }
 
     List<String> getModuleDirs() {
@@ -96,10 +93,10 @@ public final class JavaProject {
     public JavaProject build(boolean link) {
 
         List<SysCommand> cmds = new ArrayList<>();
-        cmds.add(Compiler.getCompiler(jdk).compile(this));
+        cmds.add(Compiler.getCompiler().compile(this));
         if (link && !isLibrary()) {
             IOUtil.removeDir(binTargetDir);
-            cmds.add(Linker.getLinker(jdk).link(this));
+            cmds.add(Linker.getLinker().link(this));
         }
         Executor.execute(this, cmds);
         return this;

@@ -52,7 +52,7 @@ case "$(uname)" in
     echo "DONE"
     ;;
   WindowsNT)
-    echo "Windows support coming soon..."
+    echo "windows support coming soon..."
     exit 1
     ;;
   *)

@@ -5,6 +5,7 @@ import kppk.jpx.cli.BooleanFlag;
 import kppk.jpx.cli.Context;
 import kppk.jpx.cmd.Build;
 import kppk.jpx.cmd.Dep;
+import kppk.jpx.cmd.Java;
 import kppk.jpx.cmd.Setup;
 import kppk.jpx.sys.ConsolePrinter;
 
@@ -45,6 +46,7 @@ public class Main {
                 .addCommand(Build.CMD_BUILD)
                 .addCommand(Build.CMD_CLEAN)
                 .addCommand(Dep.CMD_DEP_INSTALL)
+                .addCommand(Java.CMD_JAVA)
                 .addFlag(FLAG_VERBOSE)
                 .build()
                 .execute(args);

@@ -47,9 +47,7 @@ public final class Dep {
 
         dependencies.stream()
                 .filter(d -> d.resolver != null)
-                .forEach(dependency -> {
-                    dependency.resolver.fetch(dependency.version, lib);
-                });
+                .forEach(dependency -> dependency.resolver.fetch(dependency.version, lib));
 
 
         System.out.println("Finished");

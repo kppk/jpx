@@ -35,7 +35,7 @@ public final class JSONMessages {
 
     private static final ResourceBundle RESOURCES =
             ResourceBundle.getBundle(JSONMessages.class.getPackage().getName() +
-            ".JSONMessagesBundle", LOCALE);
+                    ".JSONMessagesBundle", LOCALE);
 
     public static String localize(Object[] args, String key) {
         if (args == null) {

@@ -2,8 +2,6 @@ package kppk.jpx.project;
 
 import kppk.jpx.sys.SysCommand;
 
-import java.util.Objects;
-
 /**
  * TODO: Document this
  */
@@ -12,14 +10,8 @@ public interface Linker {
 
     SysCommand link(JavaProject project);
 
-    static Linker getLinker(JDK jdk) {
-        Objects.requireNonNull(jdk);
-        switch (jdk) {
-            case v9:
-            case v10:
-                return JAVA_9;
-        }
-        throw new IllegalArgumentException("Unsupported JDK: " + jdk.release);
+    static Linker getLinker() {
+        return JAVA_9;
     }
 
     Linker JAVA_9 = project -> {

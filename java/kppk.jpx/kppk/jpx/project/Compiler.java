@@ -5,7 +5,6 @@ import kppk.jpx.sys.SysCommand;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -15,14 +14,8 @@ interface Compiler {
 
     SysCommand compile(JavaProject project);
 
-    static Compiler getCompiler(JDK jdk) {
-        Objects.requireNonNull(jdk);
-        switch (jdk) {
-            case v9:
-            case v10:
-                return JAVA_9;
-        }
-        throw new IllegalArgumentException("Unsupported JDK: " + jdk.release);
+    static Compiler getCompiler() {
+        return JAVA_9;
     }
 
     Compiler JAVA_9 = project -> {

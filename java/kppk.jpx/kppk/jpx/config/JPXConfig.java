@@ -9,8 +9,10 @@ import java.nio.file.Paths;
 public class JPXConfig {
 
     private static final String HOME_DIR_NAME = ".jpx";
+    private static final String JDK_DIR_NAME = "java";
 
     public final Path home;
+    public final Path jdkDir;
 
     public static final JPXConfig INSTANCE = getInstance();
 
@@ -22,6 +24,7 @@ public class JPXConfig {
 
     private JPXConfig(Path home) {
         this.home = home;
+        this.jdkDir = home.resolve(JDK_DIR_NAME);
     }
 
 
