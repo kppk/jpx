@@ -1,5 +1,7 @@
 package kppk.jpx.sys;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.function.Supplier;
 
 /**
@@ -25,7 +27,16 @@ public final class ConsolePrinter {
     }
 
     public static void error(Exception exception) {
-        print(Verbosity.ERROR, () -> "ERROR: " + exception.getMessage());
+        print(Verbosity.ERROR, () -> {
+            String details = "";
+            if (level == Verbosity.VERBOSE) {
+                StringWriter stringWriter = new StringWriter();
+                PrintWriter printWriter = new PrintWriter(stringWriter);
+                exception.printStackTrace(printWriter);
+                details = "\n" + stringWriter.toString();
+            }
+            return "ERROR: " + exception.getMessage() + details;
+        });
     }
 
     public static void info(Supplier<String> message) {

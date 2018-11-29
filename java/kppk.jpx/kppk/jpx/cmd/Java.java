@@ -4,6 +4,8 @@ import kppk.jpx.cli.Command;
 import kppk.jpx.cli.StringFlag;
 import kppk.jpx.jdk.JdkInstaller;
 
+import static kppk.jpx.Main.handleCommon;
+
 /**
  * TODO: Document this
  */
@@ -18,9 +20,9 @@ public final class Java {
             .setName("java")
             .setUsage("Installs/Updates java development kit")
             .addFlag(FLAG_RELEASE)
-            .setExecutor(ctx -> JdkInstaller.install(
+            .setExecutor(handleCommon.andThen(ctx -> JdkInstaller.install(
                     ctx.getFlagValue(FLAG_RELEASE)
-            ))
+            )))
             .build();
 
 

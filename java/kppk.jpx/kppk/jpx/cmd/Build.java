@@ -36,7 +36,7 @@ public final class Build {
             .setUsage("Remove the target directory")
             .setArg(StringFlag.builder()
                     .build())
-            .setExecutor(ctx -> clean())
+            .setExecutor(handleCommon.andThen(ctx -> clean()))
             .build();
 
     private static void build(boolean install) {

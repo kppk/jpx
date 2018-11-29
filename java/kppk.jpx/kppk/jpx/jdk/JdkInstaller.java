@@ -5,6 +5,7 @@ import kppk.jpx.json.JSONDocument;
 import kppk.jpx.json.JSONFactory;
 import kppk.jpx.json.JSONReader;
 import kppk.jpx.json.JSONWriter;
+import kppk.jpx.sys.ConsolePrinter;
 import kppk.jpx.sys.Curl;
 import kppk.jpx.sys.Executor;
 import kppk.jpx.sys.SysCommand;
@@ -140,6 +141,7 @@ public class JdkInstaller {
             }
         }
 
+        ConsolePrinter.info(() -> "Downloading Java [" + jdkDistro.name + "]");
         Path downloaded = Curl.get(jdkDistro.url);
         SysCommand untar = SysCommand.builder("tar")
                 .addParameter("-xf")
@@ -161,6 +163,12 @@ public class JdkInstaller {
         if (latest == null || expired(latest.updated)) {
             latest = install(javaRelease);
         }
+        Path home = homePath(javaRelease, latest);
+        ConsolePrinter.verbose(() -> "Using [" + home.toAbsolutePath() + "] as java home");
+        return home;
+    }
+
+    private static Path homePath(String javaRelease, JdkDistro latest) {
         switch (Os.TYPE) {
             case mac:
                 return JPXConfig.INSTANCE.jdkDir.resolve(javaRelease)

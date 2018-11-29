@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static kppk.jpx.Main.handleCommon;
+
 /**
  * TODO: Document this
  */
@@ -19,7 +21,7 @@ public final class Dep {
     public static final Command CMD_DEP_INSTALL = Command.builder()
             .setName("install")
             .setUsage("Install all dependencies to libs directory")
-            .setExecutor(ctx -> installDeps())
+            .setExecutor(handleCommon.andThen(ctx -> installDeps()))
             .build();
 
     private Dep() {

@@ -66,6 +66,7 @@ public final class Executor {
     public static Reader executeAndRead(SysCommand command) {
         File baseDir = new File(System.getProperty("java.io.tmpdir"));
         List<String> args = command.toListWithFullPath(null);
+        ConsolePrinter.verbose(() -> "[Execute] " + args.stream().collect(Collectors.joining(" ")));
         try {
             Process process = new ProcessBuilder(args)
                     .directory(baseDir)

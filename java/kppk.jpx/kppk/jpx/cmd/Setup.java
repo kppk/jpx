@@ -13,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static kppk.jpx.Main.handleCommon;
+
 /**
  * Following cli commands are implemented here:
  * <ul>
@@ -47,10 +49,10 @@ public final class Setup {
             .addFlag(FLAG_NAME)
             .addFlag(FLAG_BINARY)
             .addFlag(FLAG_LIBRARY)
-            .setExecutor(ctx -> newProject(ctx.getArg(),
+            .setExecutor(handleCommon.andThen(ctx -> newProject(ctx.getArg(),
                     ctx.getFlagValue(FLAG_NAME),
                     asType(ctx.getFlagValue(FLAG_BINARY), ctx.getFlagValue(FLAG_LIBRARY))
-            ))
+            )))
             .build();
 
     public static final Command CMD_INIT = Command.builder()
@@ -59,14 +61,17 @@ public final class Setup {
             .addFlag(FLAG_NAME)
             .addFlag(FLAG_BINARY)
             .addFlag(FLAG_LIBRARY)
-            .setExecutor(ctx -> initProject(Paths.get("."),
+            .setExecutor(handleCommon.andThen(ctx -> initProject(Paths.get("."),
                     ctx.getFlagValue(FLAG_NAME),
                     asType(ctx.getFlagValue(FLAG_BINARY), ctx.getFlagValue(FLAG_LIBRARY))
-            ))
+            )))
             .build();
 
     private static void newProject(String dir, String projectName, Pack.Type type) {
         try {
+            if (dir == null) {
+                throw new IllegalArgumentException("Missing argument <path>");
+            }
             Path dirPath = Paths.get(dir);
             String n = projectName == null ? dir : projectName;
             Pack.Name name = Pack.Name.parse(n);
