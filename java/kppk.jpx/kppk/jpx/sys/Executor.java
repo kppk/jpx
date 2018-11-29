@@ -1,5 +1,6 @@
 package kppk.jpx.sys;
 
+import kppk.jpx.config.JPXConfig;
 import kppk.jpx.project.JavaProject;
 import kppk.jpx.util.IOUtil;
 
@@ -9,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public final class Executor {
 
     public static void execute(Path binaryDir, Path baseDir, List<SysCommand> commands) {
         if (baseDir == null) {
-            baseDir = Paths.get(System.getProperty("java.io.tmpdir"));
+            baseDir = JPXConfig.INSTANCE.tmpDir;
         }
 
         try {
@@ -64,7 +64,7 @@ public final class Executor {
     }
 
     public static Reader executeAndRead(SysCommand command) {
-        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        File baseDir = JPXConfig.INSTANCE.tmpDir.toFile();
         List<String> args = command.toListWithFullPath(null);
         ConsolePrinter.verbose(() -> "[Execute] " + args.stream().collect(Collectors.joining(" ")));
         try {
