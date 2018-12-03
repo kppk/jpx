@@ -116,7 +116,7 @@ public class JdkInstaller {
         }
     }
 
-    public static JdkDistro install(String javaRelease) {
+    private static JdkDistro install(String javaRelease) {
         if (javaRelease == null) {
             javaRelease = getLatestJavaRelease();
         }
@@ -128,6 +128,7 @@ public class JdkInstaller {
 
         if (isLatestBuildAvailable(javaRelease, jdkDistro)) {
             // no need to download, we have the latest build
+            writeLatestBuild(javaRelease, jdkDistro);
             return jdkDistro;
         }
 

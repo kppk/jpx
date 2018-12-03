@@ -20,7 +20,7 @@ public final class Java {
             .setName("java")
             .setUsage("Installs/Updates java development kit")
             .addFlag(FLAG_RELEASE)
-            .setExecutor(handleCommon.andThen(ctx -> JdkInstaller.install(
+            .setExecutor(handleCommon.andThen(ctx -> JdkInstaller.getJavaHomeOrInstall(
                     ctx.getFlagValue(FLAG_RELEASE)
             )))
             .build();
