@@ -1,5 +1,7 @@
 language: minimal
 sudo: required
+services:
+  - docker
 env:
   global:
   - GRAAL_VERSION="1.0.0-rc13"
@@ -22,7 +24,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then curl --fail --silent --location --retry 3 ${GRAALVM_PKG} | gunzip | tar x -C ./; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export GRAAL_HOME=$(pwd)/graalvm-ce-${GRAAL_VERSION}/${GRAAL_HOME_SUFFIX}          ; fi
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then docker run -it --rm -v $(pwd):/work oracle/graalvm-ce:${GRAAL_VERSION} sh -c 'export GRAAL_HOME=$JAVA_HOME && export NATIVE_SUFFIX=_linux && cd /work && make native'; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run -it --rm -v $(pwd):/work oracle/graalvm-ce:${GRAAL_VERSION} sh -c 'export GRAAL_HOME=$JAVA_HOME && export NATIVE_SUFFIX=_linux && cd /work && make native'; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make native; fi
 deploy:
   provider: releases
