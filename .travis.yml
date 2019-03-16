@@ -1,5 +1,6 @@
 language: minimal
 sudo: required
+dist: xenial
 env:
   global:
   - GRAAL_VERSION="1.0.0-rc13"
