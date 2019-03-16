@@ -2,7 +2,7 @@ language: minimal
 sudo: required
 env:
   global:
-  - GRAAL_VERSION="1.0.0-rc9"
+  - GRAAL_VERSION="1.0.0-rc13"
 matrix:
   fast_finish: true
   include:
