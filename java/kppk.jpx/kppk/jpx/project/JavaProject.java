@@ -1,8 +1,10 @@
 package kppk.jpx.project;
 
+import kppk.jpx.docker.ImageBuilder;
 import kppk.jpx.jdk.JdkInstaller;
 import kppk.jpx.model.Manifest;
 import kppk.jpx.model.Pack;
+import kppk.jpx.sys.ConsolePrinter;
 import kppk.jpx.sys.Executor;
 import kppk.jpx.sys.SysCommand;
 import kppk.jpx.util.IOUtil;
@@ -27,19 +29,22 @@ public final class JavaProject {
     public static final String DIR_SRC = "java";
     static final String DIR_LIB = "lib";
     static final String DIR_BIN = "binary";
-
+    static final String DIR_DOCKER = "docker";
 
     private final Path targetDir;
     public final Path baseDir;
     final Path targetModDir;
     final Path srcDir;
     final Path binTargetDir;
+    final Path targetDocker;
+
     final Manifest manifest;
     public final Path javaHome;
     final Path libDir;
     final Pack.Name name;
     final String binaryName;
     final String mainClass;
+
 
     private JavaProject(Manifest manifest,
                         Pack.Name name,
@@ -56,6 +61,7 @@ public final class JavaProject {
         this.srcDir = baseDir.resolve(DIR_SRC);
         this.binaryName = asBinaryName(name);
         this.mainClass = "Main";
+        this.targetDocker = targetDir.resolve(DIR_DOCKER);
     }
 
     public static JavaProject createNew(Manifest mf) {
@@ -90,13 +96,13 @@ public final class JavaProject {
         }
     }
 
-    public JavaProject build(boolean link) {
+    public JavaProject build(boolean link, boolean minimize) {
 
         List<SysCommand> cmds = new ArrayList<>();
         cmds.add(Compiler.getCompiler().compile(this));
         if (link && !isLibrary()) {
             IOUtil.removeDir(binTargetDir);
-            cmds.add(Linker.getLinker().link(this));
+            cmds.add(Linker.getLinker().link(this, minimize));
         }
         Executor.execute(this, cmds);
         return this;
@@ -115,6 +121,25 @@ public final class JavaProject {
                 binTargetDir,
                 executable);
         return this;
+    }
+
+    public JavaProject buildDockerImage(boolean minimize) {
+        if (isLibrary()) {
+            ConsolePrinter.error(() -> "Project is library, skipping docker image build");
+            return this;
+        }
+
+        ImageBuilder.buildImage(this.baseDir,
+                targetDocker,
+                manifest.pack.javaRelease,
+                null, //TODO: parametrize
+                manifest.pack.version.toString(),
+                asBinaryName(name),
+                minimize
+        );
+
+        return this;
+
     }
 
 

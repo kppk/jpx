@@ -8,18 +8,18 @@ import kppk.jpx.sys.SysCommand;
 @FunctionalInterface
 public interface Linker {
 
-    SysCommand link(JavaProject project);
+    SysCommand link(JavaProject project, boolean minimize);
 
     static Linker getLinker() {
         return JAVA_9;
     }
 
-    Linker JAVA_9 = project -> {
+    Linker JAVA_9 = (project, minimize) -> {
         if (project.isLibrary()) {
             // TODO: handle this
         }
         String module = JavaProject.asModuleName(project.name);
-        return SysCommand.builder("jlink")
+        SysCommand.Builder jlink =  SysCommand.builder("jlink")
                 .addParameter("--module-path")
                 .addParameter(project.targetModDir.toString() + ":" + project.javaHome.resolve("jmods"))
                 .addParameter("--add-modules")
@@ -31,8 +31,12 @@ public interface Linker {
                         JavaProject.asBinaryName(project.name),
                         module,
                         module,
-                        project.mainClass))
-                .build();
+                        project.mainClass));
+
+        if (minimize) {
+            jlink.addParameter("--strip-debug");
+        }
+        return jlink.build();
     };
 
 }

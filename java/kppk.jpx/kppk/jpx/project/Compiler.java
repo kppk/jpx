@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 /**
  * TODO: Document this
  */
+@FunctionalInterface
 interface Compiler {
 
     SysCommand compile(JavaProject project);
