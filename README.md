@@ -1,6 +1,7 @@
 # JPX
 
 [![Build Status](https://travis-ci.org/kppk/jpx.svg?branch=master)](https://travis-ci.org/kppk/jpx)
+[![Version](https://img.shields.io/github/release/kppk/jpx.svg?style=plastic)](https://img.shields.io/github/release/kppk/jpx.svg?style=plastic)
 
 JPX is an **experimental** package management for java.
 
