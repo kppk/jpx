@@ -1,8 +1,8 @@
 package kppk.jpx.cmd;
 
-import kppk.jpx.cli.BooleanFlag;
-import kppk.jpx.cli.Command;
-import kppk.jpx.cli.StringFlag;
+import kppk.cli.BooleanFlag;
+import kppk.cli.Command;
+import kppk.cli.StringFlag;
 import kppk.jpx.model.Manifest;
 import kppk.jpx.project.JavaProject;
 import kppk.jpx.sys.ConsolePrinter;

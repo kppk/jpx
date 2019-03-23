@@ -1,7 +1,7 @@
 package kppk.jpx.cmd;
 
-import kppk.jpx.cli.Command;
-import kppk.jpx.cli.StringFlag;
+import kppk.cli.Command;
+import kppk.cli.StringFlag;
 import kppk.jpx.jdk.JdkInstaller;
 
 import static kppk.jpx.Main.handleCommon;

@@ -1,6 +1,6 @@
 package kppk.jpx.cmd;
 
-import kppk.jpx.cli.Command;
+import kppk.cli.Command;
 import kppk.jpx.dep.Dependency;
 import kppk.jpx.dep.Graph;
 import kppk.jpx.model.Manifest;

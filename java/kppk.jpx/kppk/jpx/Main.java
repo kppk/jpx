@@ -1,8 +1,8 @@
 package kppk.jpx;
 
-import kppk.jpx.cli.App;
-import kppk.jpx.cli.BooleanFlag;
-import kppk.jpx.cli.Context;
+import kppk.cli.App;
+import kppk.cli.BooleanFlag;
+import kppk.cli.Context;
 import kppk.jpx.cmd.Build;
 import kppk.jpx.cmd.Dep;
 import kppk.jpx.cmd.Java;

@@ -1,4 +1,4 @@
-JAVA_FILES:=$(shell find java/kppk.jpx -name '*.java'| paste -sd ' ' -)
+JAVA_FILES:=$(shell find lib/kppk/cli/java/kppk.cli java/kppk.jpx -name '*.java' -not -name 'module-info.java'| paste -sd ' ' -)
 
 ifndef GRAAL_HOME
 $(error GRAAL_HOME is not set, install GraalVM from https://www.graalvm.org/ and set GRAAL_HOME)
@@ -9,7 +9,7 @@ JAVAC:=$(GRAAL_HOME)/bin/javac
 
 .PHONY: javac
 javac: target
-	@$(JAVAC) -d target -sourcepath java/kppk.jpx $(JAVA_FILES)
+	@$(JAVAC) -d target -sourcepath java/kppk.jpx:lib/kppk/cli/java/kppk.cli $(JAVA_FILES)
 
 target:
 	mkdir target

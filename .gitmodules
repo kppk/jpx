@@ -1,0 +1,3 @@
+[submodule "lib/kppk/cli"]
+	path = lib/kppk/cli
+	url = https://github.com/kppk/cli
