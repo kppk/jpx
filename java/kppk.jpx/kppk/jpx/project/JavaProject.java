@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -96,15 +97,30 @@ public final class JavaProject {
         }
     }
 
-    public JavaProject build(boolean link, boolean minimize) {
+    public JavaProject build() {
 
         List<SysCommand> cmds = new ArrayList<>();
         cmds.add(Compiler.getCompiler().compile(this));
-        if (link && !isLibrary()) {
+        if (!isLibrary()) {
             IOUtil.removeDir(binTargetDir);
-            cmds.add(Linker.getLinker().link(this, minimize));
+            cmds.add(Linker.getLinker().link(this));
+            // dump cds data
+            cmds.add(SysCommand.builder(binTargetDir.resolve("bin").resolve("java").toString())
+                    .addParameter("-Xshare:dump")
+                    .build());
         }
         Executor.execute(this, cmds);
+        if (!isLibrary()) {
+            String launcher = Launcher.getLauncher().create(this);
+            Path script = binTargetDir.resolve("bin").resolve(asBinaryName(name));
+            try {
+                Files.write(script, launcher.getBytes());
+                Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwxr-xr-x"));
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+
+        }
         return this;
     }
 

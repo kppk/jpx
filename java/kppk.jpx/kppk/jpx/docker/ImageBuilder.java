@@ -1,5 +1,6 @@
 package kppk.jpx.docker;
 
+import kppk.jpx.sys.ConsolePrinter;
 import kppk.jpx.sys.Executor;
 import kppk.jpx.sys.SysCommand;
 
@@ -100,6 +101,14 @@ public final class ImageBuilder {
                 .build();
         Executor.execute(null, targetDir, Collections.singletonList(dockerLoad));
 
+        // remove pkg files
+        try {
+            Files.deleteIfExists(targetDir.resolve(pkgIn));
+            Files.deleteIfExists(targetDir.resolve(pkgOut));
+        } catch (IOException e) {
+
+        }
+
     }
 
     private static String dockerFile(String jdkRelease, String binaryName) {
@@ -129,6 +138,7 @@ public final class ImageBuilder {
                 "  - /bin/sh\n" +
                 "  - /app\n" +
                 "  - /usr/lib64/libm.so.6\n" +
+                "  - /usr/lib64/librt.so.1\n" +
                 "  - /usr/bin/dirname";
     }
 

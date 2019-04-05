@@ -17,6 +17,8 @@ target:
 .PHONY: native
 native: javac
 	$(NATIVE) $(NATIVE_FLAGS) -H:Name=jpx -H:+ReportUnsupportedElementsAtRuntime \
-		--delay-class-initialization-to-runtime=kppk.jpx.config.JPXConfig -cp target kppk.jpx.Main
+		--delay-class-initialization-to-runtime=kppk.jpx.config.JPXConfig \
+		--delay-class-initialization-to-runtime=kppk.jpx.json.impl.JSONMessages \
+		-cp target kppk.jpx.Main
 	mkdir -p ./bin
 	mv jpx ./bin/jpx$(NATIVE_SUFFIX)

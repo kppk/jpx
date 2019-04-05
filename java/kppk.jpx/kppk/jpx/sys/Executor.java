@@ -33,7 +33,6 @@ public final class Executor {
                 ConsolePrinter.verbose(() -> "[Execute] " + args.stream().collect(Collectors.joining(" ")));
                 Process process = new ProcessBuilder(args)
                         .directory(baseDir.toFile())
-                        .inheritIO()
                         .redirectErrorStream(true)
                         .start();
                 int code = process.waitFor();
@@ -66,7 +65,7 @@ public final class Executor {
     public static Reader executeAndRead(SysCommand command) {
         File baseDir = JPXConfig.INSTANCE.tmpDir.toFile();
         List<String> args = command.toListWithFullPath(null);
-        ConsolePrinter.verbose(() -> "[Execute] " + args.stream().collect(Collectors.joining(" ")));
+        ConsolePrinter.verbose(() -> "[Execute] " + String.join(" ", args));
         try {
             Process process = new ProcessBuilder(args)
                     .directory(baseDir)

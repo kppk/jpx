@@ -66,7 +66,7 @@ public final class Build {
         );
 
         JavaProject project = JavaProject.createNew(manifest)
-                .build(true, minimize);
+                .build();
 
         if (install) {
             project.install();
