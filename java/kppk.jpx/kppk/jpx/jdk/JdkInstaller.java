@@ -5,11 +5,6 @@ import kppk.jpx.json.JSONDocument;
 import kppk.jpx.json.JSONFactory;
 import kppk.jpx.json.JSONReader;
 import kppk.jpx.json.JSONWriter;
-import kppk.jpx.sys.ConsolePrinter;
-import kppk.jpx.sys.Curl;
-import kppk.jpx.sys.Executor;
-import kppk.jpx.sys.SysCommand;
-import kppk.jpx.util.Types;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -22,264 +17,141 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
- * TODO: Document this
+ * Takes care of installing JDK binaries. <br/>
+ * <p>
+ * Note: 'version' is used for java version (10, 11, 12,...), 'release' is used for java version release (12.0.0+33,...)
  */
-public class JdkInstaller {
+public final class JdkInstaller {
 
-    private static final String JDK_DEF_URL = "https://raw.githubusercontent.com/kppk/jpx/master/data/AdoptOpenJDK.json";
-    private static final Duration DEFAULT_EXPIRATION = Duration.ofDays(1);
+    private static final Duration DEFAULT_EXPIRATION = Duration.ofDays(10);
 
-    private static final Supplier<JSONDocument> jdkCatalogSupplier = new CatalogSupplier();
-
+    /**
+     * No instances, just functions.
+     */
     private JdkInstaller() {
     }
 
-    private static final class Release {
-        private final String number;
+    /**
+     * Get the home for the provided java version. eg. 12 <br/>
+     * If the version is not provided, it will use the latest version. <br/>
+     * If that version is provided, but not available, it will download latest release of that version.<br/>
+     * If the version is provided, and available, it will still check if the release is the latest one, and install latest if not the case.
+     *
+     * @param version java version, eg. 12
+     * @return path to java home
+     */
+    public static Path getJavaHomeOrInstall(String version) {
+        AdoptOpenJdkProvider jdkProvider = new AdoptOpenJdkProvider();
+        if (version == null) {
+            version = getLatestJavaVersion(jdkProvider);
+        }
+
+        Path latestFile = JPXConfig.INSTANCE.jdkDir.resolve(version).resolve("latest");
+        Latest latest = readLatest(latestFile);
+        if (latest == null || latest.isExpired()) {
+            // use the jdk provider to get the latest release for the specified java version
+            AdoptOpenJdkProvider.JdkRelease release = jdkProvider.getLatestRelease(version);
+            if (latest != null && latest.value.equals(release.name)) {
+                // same release as we have in latest, no need to install
+                return release.home();
+            }
+            // install
+            jdkProvider.install(release);
+            writeLatest(latestFile, release.name);
+            return release.home();
+        }
+        return new JdkRelease(version, latest.value).home();
+    }
+
+    /**
+     * Class to hold the latest data, it has value and timestamp.
+     * <p>
+     * This is used to throttle the requests to JdkProvider, only when the latest `updated` is expired, new request
+     * is gonna be made.
+     */
+    private static final class Latest {
+        private final String value;
         private final ZonedDateTime updated;
 
-        public Release(String number, ZonedDateTime updated) {
-            this.number = number;
-            this.updated = updated;
-        }
-    }
-
-    private static final class JdkDistro {
-        private final String url;
-        private final String name;
-        private final ZonedDateTime updated;
-
-        private JdkDistro(String url, String name, ZonedDateTime updated) {
-            this.url = url;
-            this.name = name;
+        Latest(String value, ZonedDateTime updated) {
+            this.value = value;
             this.updated = updated;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            JdkDistro that = (JdkDistro) o;
-            return url.equals(that.url) &&
-                    name.equals(that.name);
+        boolean isExpired() {
+            Duration diff = Duration.between(updated, ZonedDateTime.now());
+            return DEFAULT_EXPIRATION.compareTo(diff) < 1;
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(url, name);
-        }
     }
 
-    private static String getLatestJavaRelease() {
-        Release release = readLatestRelease();
-        if (release == null || expired(release.updated)) {
-            String number = jdkCatalogSupplier.get().getString("latest");
-            release = new Release(number, null);
-            writeLatestRelease(release);
+    /**
+     * Returns latest java version (10, 11, 12, ...). Used only when the java version is not specified in project's
+     * toml file.
+     *
+     * @param jdkProvider JdkProvider implementation to use to get the latest version
+     * @return version as a String
+     */
+    private static String getLatestJavaVersion(JdkProvider<?> jdkProvider) {
+        Path latestFile = JPXConfig.INSTANCE.jdkDir.resolve("latest");
+        Latest latest = readLatest(latestFile);
+        if (latest == null || latest.isExpired()) {
+            // use the jdk provider to get the latest java version
+            String version = jdkProvider.getLatestVersion();
+            writeLatest(latestFile, version);
+            return version;
         }
-        return release.number;
+        return latest.value;
     }
 
-    private static JdkDistro getLatestGithubRelease(String releaseUrl) {
-        JSONDocument releaseJson = Curl.getAsJson(releaseUrl);
-
-        String releaseName = releaseJson.getString("tag_name");
-        List<Object> assets = releaseJson.getList("assets");
-        for (Object asset : assets) {
-            JSONDocument assetJson = Types.safeCast(asset, JSONDocument.class);
-            String name = assetJson.getString("name");
-            if (name.contains(releaseFileName()) && name.endsWith(".tar.gz")) {
-                // found the release to download
-                String url = assetJson.getString("browser_download_url");
-                return new JdkDistro(url, releaseName, ZonedDateTime.now());
-            }
-        }
-        throw new IllegalStateException("Unable to find the JDK to download");
-    }
-
-    private static String releaseFileName() {
-        switch (Os.TYPE) {
-            case mac:
-                return "-jdk_x64_mac_hotspot_";
-            case linux:
-                return "-jdk_x64_linux_hotspot_";
-            default:
-                throw new IllegalStateException("Unsupported OS, currently supported: mac, linux");
-        }
-    }
-
-    private static JdkDistro install(String javaRelease) {
-        if (javaRelease == null) {
-            javaRelease = getLatestJavaRelease();
-        }
-        String releaseUrl = jdkCatalogSupplier.get().getString(javaRelease);
-        if (releaseUrl == null) {
-            throw new IllegalArgumentException("Invalid java release provided [" + javaRelease + "]");
-        }
-        JdkDistro jdkDistro = getLatestGithubRelease(releaseUrl);
-
-        if (isLatestBuildAvailable(javaRelease, jdkDistro)) {
-            // no need to download, we have the latest build
-            writeLatestBuild(javaRelease, jdkDistro);
-            return jdkDistro;
-        }
-
-        Path targetDir = JPXConfig.INSTANCE.jdkDir.resolve(javaRelease);
-        Path targetReleaseDir = JPXConfig.INSTANCE.jdkDir.resolve(javaRelease).resolve(jdkDistro.name);
-        if (!Files.exists(targetReleaseDir)) {
-            try {
-                Files.createDirectories(targetDir);
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
-        }
-
-        ConsolePrinter.info(() -> "Downloading Java [" + jdkDistro.name + "]");
-        Path downloaded = Curl.get(jdkDistro.url);
-        SysCommand untar = SysCommand.builder("tar")
-                .addParameter("-xf")
-                .addParameter(downloaded.toAbsolutePath().toString())
-                .addParameter("-C")
-                .addParameter(targetDir.toAbsolutePath().toString())
-                .build();
-        Executor.execute(null, targetDir, Collections.singletonList(untar));
-
-        writeLatestBuild(javaRelease, jdkDistro);
-        return jdkDistro;
-    }
-
-    public static Path getJavaHomeOrInstall(String javaRelease) {
-        if (javaRelease == null) {
-            javaRelease = getLatestJavaRelease();
-        }
-        JdkDistro latest = readLatestBuild(javaRelease);
-        if (latest == null || expired(latest.updated)) {
-            latest = install(javaRelease);
-        }
-        Path home = homePath(javaRelease, latest);
-        ConsolePrinter.verbose(() -> "Using [" + home.toAbsolutePath() + "] as java home");
-        return home;
-    }
-
-    private static Path homePath(String javaRelease, JdkDistro latest) {
-        switch (Os.TYPE) {
-            case mac:
-                return JPXConfig.INSTANCE.jdkDir.resolve(javaRelease)
-                        .resolve(latest.name)
-                        .resolve("Contents")
-                        .resolve("Home");
-            case linux:
-                return JPXConfig.INSTANCE.jdkDir.resolve(javaRelease)
-                        .resolve(latest.name);
-            default:
-                throw new IllegalStateException("Unsupported OS, currently supported: mac, linux");
-        }
-    }
-
-    private static boolean isLatestBuildAvailable(String javaRelease, JdkDistro jdkDistro) {
-        JdkDistro latest = readLatestBuild(javaRelease);
-        if (latest == null) {
-            return false;
-        }
-        return latest.equals(jdkDistro);
-    }
-
-    private static JdkDistro readLatestBuild(String javaRelease) {
-        Path latestFile = latestBuildFile(javaRelease);
+    /**
+     * Reads latest file (json) and de-serializes it to Latest object.
+     *
+     * @param latestFile Path to file containing latest info
+     * @return Latest object
+     */
+    private static Latest readLatest(Path latestFile) {
         if (!Files.exists(latestFile)) {
             return null;
         }
         try (Reader r = new BufferedReader(new FileReader(latestFile.toFile()))) {
             JSONReader reader = JSONFactory.instance().makeReader(r);
             JSONDocument latestJson = reader.build();
-            String name = latestJson.getString("name");
-            String url = latestJson.getString("url");
+            String name = latestJson.getString("value");
             ZonedDateTime updated = ZonedDateTime.parse(latestJson.getString("updated"));
-            return new JdkDistro(url, name, updated);
+            return new Latest(name, updated);
+
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private static void writeLatestBuild(String javaRelease, JdkDistro jdkDistro) {
-        Path latestFile = latestBuildFile(javaRelease);
+    /**
+     * Writes latest to provided file. This is used to throttle the requests to JdkProvider.
+     *
+     * @param latestFile path to store to
+     * @param value      latest value to store
+     * @see #getJavaHomeOrInstall(String)
+     */
+    private static void writeLatest(Path latestFile, String value) {
+        try {
+            Files.createDirectories(latestFile.getParent());
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
         try (Writer w = new BufferedWriter(new FileWriter(latestFile.toFile()))) {
             Map<String, Object> latest = new HashMap<>();
-            latest.put("name", jdkDistro.name);
-            latest.put("url", jdkDistro.url);
+            latest.put("value", value);
             latest.put("updated", ZonedDateTime.now().toString());
             JSONWriter jsonWriter = JSONFactory.instance().makeWriter(w);
             jsonWriter.writeObject(latest);
             jsonWriter.flush();
         } catch (IOException e) {
             throw new IllegalStateException(e);
-        }
-    }
-
-    private static Path latestBuildFile(String javaRelease) {
-        return JPXConfig.INSTANCE.jdkDir.resolve(javaRelease).resolve("latest");
-    }
-
-    private static Release readLatestRelease() {
-        Path latestFile = latestReleaseFile();
-        if (!Files.exists(latestFile)) {
-            return null;
-        }
-        try (Reader r = new BufferedReader(new FileReader(latestFile.toFile()))) {
-            JSONReader reader = JSONFactory.instance().makeReader(r);
-            JSONDocument latestJson = reader.build();
-            String number = latestJson.getString("number");
-            ZonedDateTime updated = ZonedDateTime.parse(latestJson.getString("updated"));
-            return new Release(number, updated);
-
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static void writeLatestRelease(Release release) {
-        Path latestFile = latestReleaseFile();
-        try (Writer w = new BufferedWriter(new FileWriter(latestFile.toFile()))) {
-            Map<String, Object> latest = new HashMap<>();
-            latest.put("number", release.number);
-            latest.put("updated", ZonedDateTime.now().toString());
-            JSONWriter jsonWriter = JSONFactory.instance().makeWriter(w);
-            jsonWriter.writeObject(latest);
-            jsonWriter.flush();
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static Path latestReleaseFile() {
-        return JPXConfig.INSTANCE.jdkDir.resolve("latest");
-
-    }
-
-    private static boolean expired(ZonedDateTime dateTime) {
-        Duration diff = Duration.between(dateTime, ZonedDateTime.now());
-        return DEFAULT_EXPIRATION.compareTo(diff) < 1;
-    }
-
-    private static final class CatalogSupplier implements Supplier<JSONDocument> {
-
-        private JSONDocument catalog;
-
-        @Override
-        public JSONDocument get() {
-            // don't care about locking
-            if (catalog == null) {
-                catalog = Curl.getAsJson(JDK_DEF_URL);
-            }
-            return catalog;
         }
     }
 

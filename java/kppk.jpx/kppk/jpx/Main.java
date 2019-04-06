@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class Main {
 
-    public static final BooleanFlag FLAG_VERBOSE = BooleanFlag.builder()
+    private static final BooleanFlag FLAG_VERBOSE = BooleanFlag.builder()
             .setName("verbose")
             .setShortName("v")
             .setUsage("Use verbose output")
