@@ -1,4 +1,4 @@
-package prj2;
+package kppk.prj2;
 
 public class Main {
 

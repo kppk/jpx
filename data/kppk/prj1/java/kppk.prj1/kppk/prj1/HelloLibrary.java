@@ -1,4 +1,4 @@
-package prj1;
+package kppk.prj1;
 
 public class HelloLibrary {
 

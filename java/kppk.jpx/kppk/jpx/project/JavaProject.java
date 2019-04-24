@@ -163,6 +163,12 @@ public final class JavaProject {
         return manifest.pack.type == Pack.Type.LIBRARY;
     }
 
+    /**
+     * Returns sub-path to the module-info.java
+     */
+    public static Path asModuleInfoPath(Pack.Name name) {
+        return Paths.get(DIR_SRC, asModuleName(name), "module-info.java");
+    }
 
     public static String asModuleName(Pack.Name name) {
         Objects.requireNonNull(name);

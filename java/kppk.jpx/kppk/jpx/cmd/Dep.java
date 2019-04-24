@@ -4,6 +4,7 @@ import kppk.cli.Command;
 import kppk.jpx.dep.Dependency;
 import kppk.jpx.dep.Graph;
 import kppk.jpx.model.Manifest;
+import kppk.jpx.sys.ConsolePrinter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +33,7 @@ public final class Dep {
         Path current = Paths.get(".");
         Manifest mf = Manifest.readFrom(current);
 
-        System.out.println(String.format("Installing dependencies for %s (%s)",
+        ConsolePrinter.info(() -> String.format("Installing dependencies for %s (%s)",
                 mf.pack.name, Paths.get(mf.basedir).toAbsolutePath()));
 
         Graph graph = Graph.from(mf);
@@ -52,6 +53,6 @@ public final class Dep {
                 .forEach(dependency -> dependency.resolver.fetch(dependency.version, lib));
 
 
-        System.out.println("Finished");
+        ConsolePrinter.info(() -> "Finished");
     }
 }
