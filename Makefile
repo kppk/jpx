@@ -14,8 +14,10 @@ javac: target
 	@$(JAVAC) -d target -sourcepath java/kppk.jpx:lib/kppk/cli/java/kppk.cli $(JAVA_FILES)
 
 .PHONY: test
-test: target javac
-	@$(JAVA) -cp target -ea $(TEST_FILES)
+test: javac $(TEST_FILES)
+$(TEST_FILES):
+	TEST $@
+	@$(JAVA) -cp target -ea $@
 
 target:
 	mkdir target

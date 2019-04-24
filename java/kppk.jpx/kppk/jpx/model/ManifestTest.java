@@ -14,16 +14,16 @@ public class ManifestTest {
     }
 
     public void testParse() {
-        Manifest manifest = Manifest.readFrom(Paths.get("./data/prj1/"));
+        Manifest manifest = Manifest.readFrom(Paths.get("./data/kppk/prj1/"));
 
 
 //        System.out.println(manifest);
         Graph graph = Graph.from(manifest);
-        Lock lock = new Lock(graph.flatten(), new Lock.Meta("someValue"));
-        lock.writeTo(Paths.get("./data/prj1"));
-
-        Lock anotherLock = Lock.readFrom(Paths.get("./data/prj1"));
-        System.out.println(anotherLock);
+//        Lock lock = new Lock(graph.flatten(), new Lock.Meta("someValue"));
+//        lock.writeTo(Paths.get("./data/kppk/prj1"));
+//
+//        Lock anotherLock = Lock.readFrom(Paths.get("./data/kppk/prj1"));
+//        System.out.println(anotherLock);
 
 //        graph.printTree();
 //        System.out.println("flatten:");
