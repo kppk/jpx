@@ -1,8 +1,8 @@
 package kppk.jpx.dep;
 
-import kppk.jpx.cache.FileCache;
 import kppk.jpx.model.Dep;
 import kppk.jpx.model.Manifest;
+import kppk.jpx.module.ModuleDescriptor;
 import kppk.jpx.version.Version;
 
 import java.nio.file.Path;
@@ -17,6 +17,8 @@ public interface Resolver {
     List<Version> listVersions();
 
     Manifest getManifest(Version version);
+
+    String getRawFile(Version version, Path path);
 
     void fetch(Version version, Path targetDir);
 
@@ -33,7 +35,7 @@ public interface Resolver {
     static Resolver thatResolves(Manifest mf, Dep dep) {
 
         if (dep.selectorName.equals(GitHubResolver.SELECTOR)) {
-            return new FileCache(dep, new GitHubResolver(dep));
+            return new FileCache(dep, new GitHubResolver(dep.name.org, dep.name.repo));
         }
 
         throw new IllegalArgumentException("Don't know which resolver to use");

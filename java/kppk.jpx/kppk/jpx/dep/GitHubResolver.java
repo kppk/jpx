@@ -1,6 +1,5 @@
 package kppk.jpx.dep;
 
-import kppk.jpx.model.Dep;
 import kppk.jpx.model.Manifest;
 import kppk.jpx.version.Version;
 
@@ -11,22 +10,24 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * TODO: Document this
+ * Gets source from GitHub.
  */
 final class GitHubResolver implements Resolver {
 
     public static final String SELECTOR = "github";
 
-    private final Dep.Name name;
+    private final String org;
+    private final String repo;
 
 
-    GitHubResolver(Dep dep) {
-        name = dep.name;
+    GitHubResolver(String org, String repo) {
+        this.org = org;
+        this.repo = repo;
     }
 
     @Override
     public List<Version> listVersions() {
-        return GitHubCurlClient.getTags(name.org, name.repo).stream()
+        return GitHubCurlClient.getTags(org, repo).stream()
                 .map(s -> {
                     try {
                         return new Version(s);
@@ -41,11 +42,16 @@ final class GitHubResolver implements Resolver {
 
     @Override
     public Manifest getManifest(Version version) {
-        return GitHubCurlClient.getManifest(name.org, name.repo, version.toString());
+        return GitHubCurlClient.getManifest(org, repo, version.toString());
+    }
+
+    @Override
+    public String getRawFile(Version version, Path path) {
+        return GitHubCurlClient.getProjecFileRaw(org, repo, version.toString(), path);
     }
 
     @Override
     public void fetch(Version version, Path targetDir) {
-        GitHubCurlClient.fetch(name.org, name.repo, version.toString(), targetDir);
+        GitHubCurlClient.fetch(org, repo, version.toString(), targetDir);
     }
 }

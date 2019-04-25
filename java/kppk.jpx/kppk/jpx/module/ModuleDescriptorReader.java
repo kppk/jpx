@@ -1,10 +1,15 @@
 package kppk.jpx.module;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -18,6 +23,40 @@ public final class ModuleDescriptorReader {
 
     public ModuleDescriptorReader(Reader reader) {
         this.reader = reader;
+    }
+
+
+    /**
+     * Reads the ModuleDescriptor from the provided module-info.java file.
+     *
+     * @param moduleInfo path to module-info.java
+     * @return parsed module-info.java as ModuleDescriptor
+     */
+    public static ModuleDescriptor readFrom(Path moduleInfo) {
+        Objects.requireNonNull(moduleInfo);
+        try (BufferedReader reader = new BufferedReader(new FileReader(moduleInfo.toFile()))) {
+            ModuleDescriptorReader descriptorReader = new ModuleDescriptorReader(reader);
+            return descriptorReader.read();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    /**
+     * Reads the ModuleDescriptor from the provided module-info.java content.
+     *
+     * @param moduleInfoContent content of module-info.java
+     * @return parsed module-info.java as ModuleDescriptor
+     */
+    public static ModuleDescriptor readFrom(String moduleInfoContent) {
+        Objects.requireNonNull(moduleInfoContent);
+
+        try (BufferedReader reader = new BufferedReader(new StringReader(moduleInfoContent))) {
+            ModuleDescriptorReader descriptorReader = new ModuleDescriptorReader(reader);
+            return descriptorReader.read();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public ModuleDescriptor read() throws IOException {

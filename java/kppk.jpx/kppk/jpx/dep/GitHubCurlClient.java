@@ -11,22 +11,25 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This has to be here, cause SubstrateVM doesn't support HTTPS yet.
+ * We use curl so we don't need to provide ssl libs with the native image we build.
+ * <p>
+ * see https://github.com/oracle/graal/blob/master/substratevm/JCA-SECURITY-SERVICES.md
  */
 final class GitHubCurlClient {
 
-    public static List<String> getTags(String user, String project) {
+    static List<String> getTags(String user, String project) {
         String url = String.format("https://api.github.com/repos/%s/%s/tags", user, project);
         JSONDocument json = Curl.getAsJson(url);
         return parseTags(json);
     }
 
-    public static Manifest getManifest(String user, String project, String version) {
+    static Manifest getManifest(String user, String project, String version) {
         String url = String.format("https://raw.githubusercontent.com/%s/%s/%s/%s", user, project, version, Manifest.NAME);
         try {
             String txt = Curl.getAsString(url);
@@ -36,7 +39,22 @@ final class GitHubCurlClient {
         }
     }
 
-    public static void fetch(String user, String project, String version, Path targetDir) {
+    /**
+     * Gets raw file content from github.
+     *
+     * @param user    github user/org
+     * @param project github project/repo
+     * @param version version (label)
+     * @param path    relative path to the file
+     * @return content of the file as String
+     */
+    static String getProjecFileRaw(String user, String project, String version, Path path) {
+        String base = String.format("https://raw.githubusercontent.com/%s/%s/%s", user, project, version);
+        String full = Paths.get(base).resolve(path).toString();
+        return Curl.getAsString(full);
+    }
+
+    static void fetch(String user, String project, String version, Path targetDir) {
         try {
             Files.createDirectories(targetDir);
         } catch (IOException e) {

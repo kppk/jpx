@@ -170,6 +170,13 @@ public final class JavaProject {
         return Paths.get(DIR_SRC, asModuleName(name), "module-info.java");
     }
 
+    /**
+     * Returns sub-path to the module-info.java
+     */
+    public static Path asModuleInfoPath(String org, String repo) {
+        return Paths.get(DIR_SRC, org + "." + repo, "module-info.java");
+    }
+
     public static String asModuleName(Pack.Name name) {
         Objects.requireNonNull(name);
 

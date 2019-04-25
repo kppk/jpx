@@ -1,7 +1,6 @@
-package kppk.jpx.cache;
+package kppk.jpx.dep;
 
 import kppk.jpx.config.JPXConfig;
-import kppk.jpx.dep.Resolver;
 import kppk.jpx.model.Dep;
 import kppk.jpx.model.Manifest;
 import kppk.jpx.util.IOUtil;
@@ -14,9 +13,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * TODO: Document this
+ * Caches all the resolved files` in ~/.jpx/.pack
  */
-public class FileCache implements Resolver {
+class FileCache implements Resolver {
 
     private static final String PACK_DIR = ".pack";
     private static final String MANIFEST_DIR = ".manifest";
@@ -24,7 +23,7 @@ public class FileCache implements Resolver {
     private final Dep dep;
     private final Resolver delegate;
 
-    public FileCache(Dep dep, Resolver delegate) {
+    FileCache(Dep dep, Resolver delegate) {
         this.dep = Objects.requireNonNull(dep);
         this.delegate = Objects.requireNonNull(delegate);
     }
@@ -47,6 +46,22 @@ public class FileCache implements Resolver {
             mf.writeTo(path);
         }
         return Manifest.readFrom(path);
+    }
+
+    @Override
+    public String getRawFile(Version version, Path path) {
+        Path localPath = toLocalPath(MANIFEST_DIR, version);
+        localPath = localPath.resolve(path);
+        if (!Files.exists(localPath)) {
+            String rawFile = delegate.getRawFile(version, path);
+            try {
+                Files.createDirectories(path.getParent());
+                Files.write(localPath, rawFile.getBytes());
+            } catch (IOException e) {
+                throw new IllegalStateException("Error handling cached file ", e);
+            }
+        }
+        return null;
     }
 
     @Override

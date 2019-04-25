@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * TODO: Document this
+ * Dependency graph.
  */
 public final class Graph {
 
@@ -22,7 +22,7 @@ public final class Graph {
         return new Graph(doResolve(manifest, null));
     }
 
-    static Dependency doResolve(Manifest mf, Resolver resolvedBy) {
+    private static Dependency doResolve(Manifest mf, Resolver resolvedBy) {
         List<Dependency> dependencies = mf.deps.stream()
                 .map(dep -> {
                     Resolver r = Resolver.thatResolves(mf, dep);
