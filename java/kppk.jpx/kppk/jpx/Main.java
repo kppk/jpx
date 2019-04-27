@@ -11,7 +11,10 @@ import kppk.jpx.sys.ConsolePrinter;
 
 import java.util.function.Consumer;
 
-public class Main {
+/**
+ * Main jpx entrypoint.
+ */
+public final class Main {
 
     private static final BooleanFlag FLAG_VERBOSE = BooleanFlag.builder()
             .setName("verbose")

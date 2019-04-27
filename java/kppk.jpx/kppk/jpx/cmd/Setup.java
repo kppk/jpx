@@ -160,13 +160,9 @@ public final class Setup {
                 "name = '" + name.toString() + "'",
                 "version = '1.0.0'",
                 "type = '" + type.name + "'",
-                "java_release = '12'",
-                "",
-                "[deps]",
-                "'kppk/somelibrary' = '1.0.0 <= v < 2.0.0'"
+                "java_release = '12'"
         );
     }
-
 
     private static void writeToFile(Path file, String content) {
         try {
