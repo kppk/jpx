@@ -5,5 +5,3 @@ repository = "https://github.com/kppk/jpx.git"
 java_release = "8"
 type = "bin"
 
-[deps]
-'kppk/somelibrary' = '1.0.0 <= v < 2.0.0'

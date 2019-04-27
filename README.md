@@ -19,7 +19,7 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
 
 ### What is a jpx pack
 
-    - has jpx.tom in root
+    - has jpx.toml in root
     - it is source repo in github
     - directory structure:
 
@@ -43,15 +43,11 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
 
 ### Dependency management
 
+    - all dependencies are defined in `module-info.java` files!
     - backed up by github (might be extended to other git repos later)
     - dependency is on source (!) repository
-    - on running build, fetch all dependencies to `lib` directory
-    - dependency is defined as:
+    - `jpx isntall` will fetch all dependencies to `lib` directory
 
-        [dep]
-        'kppk.somelibrary' = '1.0.0 <= v < 2.0.0'
-
-        this is translated to `https://github.com/kppk/somelibrary`, tags from 1.0.0 up to (not including) 2.0.0
 
 ### Build
 
@@ -79,7 +75,6 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
 
 `jpx install`         - install all dependencies to `lib` directory
 
-`jpx add`             - add new dependency to jpx.toml and install it to `lib` directory
 
 
 

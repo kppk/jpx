@@ -8,28 +8,22 @@ import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
- * TODO: Document this
+ * Manifest is project's jpx.toml file.
  */
 public final class Manifest {
 
     public static final String NAME = "jpx.toml";
 
     public final Pack pack;
-    public final List<Dep> deps;
     public final URI basedir;
 
-    private Manifest(Pack pack, List<Dep> deps, URI basedir) {
+    private Manifest(Pack pack, URI basedir) {
         this.pack = pack;
-        this.deps = deps;
         this.basedir = basedir;
     }
 
@@ -37,7 +31,6 @@ public final class Manifest {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Manifest{");
         sb.append("pack=").append(pack);
-        sb.append(", deps=").append(deps);
         sb.append('}');
         return sb.toString();
     }
@@ -85,50 +78,31 @@ public final class Manifest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Manifest manifest = (Manifest) o;
-        return Objects.equals(pack, manifest.pack) &&
-                Objects.equals(deps, manifest.deps);
+        return Objects.equals(pack, manifest.pack);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pack, deps);
+        return Objects.hash(pack);
     }
 
     private static Manifest read(URI basedir, Map<String, Object> map) {
         Pack pack = null;
-        List<Dep> deps = Collections.emptyList();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             switch (entry.getKey()) {
                 case "pack":
                     pack = Pack.read(Types.castToMap(entry.getValue()));
                     break;
-                case "deps":
-                    deps = readDeps(entry.getValue());
-                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown key: " + entry.getKey());
             }
         }
-//        Types.checkRequired(err -> {
-//            throw new IllegalArgumentException(err.stream()
-//                    .map(entry -> entry.getKey() + ": " + entry.getKey())
-//                    .collect(Collectors.joining(",")));
-//        }, Types.pair("pack", pack));
-        return new Manifest(pack, deps, basedir);
-    }
-
-    private static List<Dep> readDeps(Object obj) {
-        List<Dep> deps = new LinkedList<>();
-        for (Map.Entry<String, Object> entry : Types.castToMap(obj).entrySet()) {
-            deps.add(Dep.read(entry));
-        }
-        return deps;
+        return new Manifest(pack, basedir);
     }
 
     private Map<String, Object> write() {
         HashMap<String, Object> vals = new HashMap<>();
         vals.put("pack", pack.write());
-        vals.put("deps", deps.stream()
-                .map(Dep::write)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         return vals;
     }
 
