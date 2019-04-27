@@ -4,6 +4,7 @@ import kppk.cli.Command;
 import kppk.jpx.dep.Dependency;
 import kppk.jpx.dep.Graph;
 import kppk.jpx.model.Manifest;
+import kppk.jpx.project.JavaProject;
 import kppk.jpx.sys.ConsolePrinter;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.List;
 import static kppk.jpx.Main.handleCommon;
 
 /**
- * TODO: Document this
+ * Dependencies related actions.
  */
 public final class Dep {
 
@@ -36,7 +37,7 @@ public final class Dep {
         ConsolePrinter.info(() -> String.format("Installing dependencies for %s (%s)",
                 mf.pack.name, Paths.get(mf.basedir).toAbsolutePath()));
 
-        Graph graph = Graph.from(mf);
+        Graph graph = Graph.from(JavaProject.createNew(mf));
         List<Dependency> dependencies = graph.flatten();
 
         Path lib = current.resolve("lib");

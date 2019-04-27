@@ -1,7 +1,6 @@
 package kppk.jpx.dep;
 
 import kppk.jpx.config.JPXConfig;
-import kppk.jpx.model.Dep;
 import kppk.jpx.model.Manifest;
 import kppk.jpx.util.IOUtil;
 import kppk.jpx.version.Version;
@@ -20,11 +19,13 @@ class FileCache implements Resolver {
     private static final String PACK_DIR = ".pack";
     private static final String MANIFEST_DIR = ".manifest";
 
-    private final Dep dep;
+    private final String org;
+    private final String repo;
     private final Resolver delegate;
 
-    FileCache(Dep dep, Resolver delegate) {
-        this.dep = Objects.requireNonNull(dep);
+    FileCache(String org, String repo, Resolver delegate) {
+        this.org = Objects.requireNonNull(org);
+        this.repo = Objects.requireNonNull(repo);
         this.delegate = Objects.requireNonNull(delegate);
     }
 
@@ -44,6 +45,7 @@ class FileCache implements Resolver {
                 throw new IllegalStateException("Can't create directory ", e);
             }
             mf.writeTo(path);
+            return mf;
         }
         return Manifest.readFrom(path);
     }
@@ -55,13 +57,18 @@ class FileCache implements Resolver {
         if (!Files.exists(localPath)) {
             String rawFile = delegate.getRawFile(version, path);
             try {
-                Files.createDirectories(path.getParent());
+                Files.createDirectories(localPath.getParent());
                 Files.write(localPath, rawFile.getBytes());
+                return rawFile;
             } catch (IOException e) {
                 throw new IllegalStateException("Error handling cached file ", e);
             }
         }
-        return null;
+        try {
+            return new String(Files.readAllBytes(localPath));
+        } catch (IOException e) {
+            throw new IllegalStateException("Can't read from cached file", e);
+        }
     }
 
     @Override
@@ -70,10 +77,10 @@ class FileCache implements Resolver {
         if (!Files.exists(path.resolve(Manifest.NAME))) {
             delegate.fetch(version, path);
         }
-        IOUtil.copy(path, targetDir.resolve(dep.name.org).resolve(dep.name.repo));
+        IOUtil.copy(path, targetDir.resolve(org).resolve(repo));
     }
 
     private Path toLocalPath(String dir, Version version) {
-        return JPXConfig.INSTANCE.home.resolve(dir).resolve(dep.name.org).resolve(dep.name.repo).resolve(version.toString());
+        return JPXConfig.INSTANCE.home.resolve(dir).resolve(org).resolve(repo).resolve(version.toString());
     }
 }

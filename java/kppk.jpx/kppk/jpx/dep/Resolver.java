@@ -1,8 +1,6 @@
 package kppk.jpx.dep;
 
-import kppk.jpx.model.Dep;
 import kppk.jpx.model.Manifest;
-import kppk.jpx.module.ModuleDescriptor;
 import kppk.jpx.version.Version;
 
 import java.nio.file.Path;
@@ -10,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * TODO: Document this
+ * Resolver is responsible for communication with source repository.
  */
 public interface Resolver {
 
@@ -22,23 +20,16 @@ public interface Resolver {
 
     void fetch(Version version, Path targetDir);
 
-    default Version latest(Dep dep) {
+    default Version latest() {
         return listVersions().stream()
                 .sorted(Comparator.reverseOrder())
-                .filter(dep.version::accepts)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("No suitable version found for %s in range '%s'", dep.name, dep.version)
-                ));
+                .orElseThrow(() -> new IllegalArgumentException("No suitable version found"));
     }
 
-    static Resolver thatResolves(Manifest mf, Dep dep) {
-
-        if (dep.selectorName.equals(GitHubResolver.SELECTOR)) {
-            return new FileCache(dep, new GitHubResolver(dep.name.org, dep.name.repo));
-        }
-
-        throw new IllegalArgumentException("Don't know which resolver to use");
+    static Resolver thatResolves(String org, String repo) {
+        // use github resolver for everything now
+        return new FileCache(org, repo, new GitHubResolver(org, repo));
     }
 
     static Resolver thatResolves(String string) {

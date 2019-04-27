@@ -4,6 +4,8 @@ import kppk.jpx.docker.ImageBuilder;
 import kppk.jpx.jdk.JdkInstaller;
 import kppk.jpx.model.Manifest;
 import kppk.jpx.model.Pack;
+import kppk.jpx.module.ModuleDescriptor;
+import kppk.jpx.module.ModuleDescriptorReader;
 import kppk.jpx.sys.ConsolePrinter;
 import kppk.jpx.sys.Executor;
 import kppk.jpx.sys.SysCommand;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * TODO: Document this
+ * Java project
  */
 public final class JavaProject {
 
@@ -39,7 +41,7 @@ public final class JavaProject {
     final Path binTargetDir;
     final Path targetDocker;
 
-    final Manifest manifest;
+    public final Manifest manifest;
     public final Path javaHome;
     final Path libDir;
     final Pack.Name name;
@@ -77,6 +79,9 @@ public final class JavaProject {
         return new JavaProject(mf, name, baseDir, javaHome);
     }
 
+    /**
+     * Returns list of directories, which are java modules
+     */
     List<String> getModuleDirs() {
         try {
             Stream<Path> projectMods = Stream.of(srcDir);
@@ -158,9 +163,15 @@ public final class JavaProject {
 
     }
 
-
     public boolean isLibrary() {
         return manifest.pack.type == Pack.Type.LIBRARY;
+    }
+
+    /**
+     * Reads module-info.java as ModuleDescriptor.
+     */
+    public ModuleDescriptor getModuleDescriptor() {
+        return ModuleDescriptorReader.readFrom(baseDir.resolve(asModuleInfoPath(name)));
     }
 
     /**
