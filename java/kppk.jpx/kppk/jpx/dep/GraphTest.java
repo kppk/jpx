@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 /**
  * Test of {@link Graph}.
  */
-public class GraphTest {
+public final class GraphTest {
 
     public static void main(String[] args) {
         testFrom();

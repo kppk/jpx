@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * Caches all the resolved files` in ~/.jpx/.pack
  */
-class FileCache implements Resolver {
+final class FileCache implements Resolver {
 
     private static final String PACK_DIR = ".pack";
     private static final String MANIFEST_DIR = ".manifest";

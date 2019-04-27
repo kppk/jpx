@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO: Document this
+ * Resolved dependency value class.
  */
 public final class Dependency {
 
