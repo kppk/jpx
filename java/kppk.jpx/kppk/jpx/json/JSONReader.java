@@ -29,7 +29,7 @@ import java.util.Iterator;
 
 /**
  * Interface for reading a JSON document.
- *
+ * <p>
  * An example of how to read a simple JSON document.
  * <pre>
  * JSON: { "abc": "123" }
@@ -47,7 +47,6 @@ import java.util.Iterator;
  * r.next();  // END_OBJECT
  * r.next();  // END_DOCUMENT
  * </pre>
- *
  */
 public interface JSONReader extends Iterable<JSONReader.EventType>, Iterator<JSONReader.EventType> {
 
@@ -123,7 +122,9 @@ public interface JSONReader extends Iterable<JSONReader.EventType>, Iterator<JSO
          * Indicates the end of a JSON object value.
          */
         END_VALUE
-    };
+    }
+
+    ;
 
     /**
      * The repo of the current JSON object.
@@ -144,7 +145,7 @@ public interface JSONReader extends Iterable<JSONReader.EventType>, Iterator<JSO
      * If depth is negative, find the first occurrence of the specified object.
      * If objectName is null, skip until the specified depth is reached.
      *
-     * @param key the repo of the object to find, may be null
+     * @param key   the repo of the object to find, may be null
      * @param depth stop at the first element at this depth, ignored if negative
      * @return the event at which this method stops, EventType.END_DOCUMENT if not found
      */
@@ -194,6 +195,7 @@ public interface JSONReader extends Iterable<JSONReader.EventType>, Iterator<JSO
     /**
      * Build an in-memory representation of the input JSON. JSON Objects are
      * represented with Maps and JSON Arrays are represented with Lists.
+     *
      * @return a JSONDocument that contains a Map or a List representing the
      * root of the input object
      */

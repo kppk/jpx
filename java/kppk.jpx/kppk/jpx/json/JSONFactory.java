@@ -32,7 +32,6 @@ import java.io.Writer;
 
 /**
  * A factory class for creating a {@link JSONReader} or {@link JSONWriter}.
- *
  */
 public class JSONFactory {
 

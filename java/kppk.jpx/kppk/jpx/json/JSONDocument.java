@@ -40,7 +40,6 @@ import java.util.Vector;
  * intermediate child nodes. Can represent either an OBJECT or an
  * ARRAY at a time, never both. The type is specified at construction
  * time and is immutable.
- *
  */
 public class JSONDocument implements Iterable<JSONDocument> {
 
@@ -63,7 +62,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * The type of a JSON node. Can be an ARRAY or an OBJECT.
      */
-    public enum Type { ARRAY, OBJECT }
+    public enum Type {ARRAY, OBJECT}
 
     private final Type type;
     private final List<Object> array;
@@ -166,9 +165,9 @@ public class JSONDocument implements Iterable<JSONDocument> {
      * Writes a string representation of the node and its children,
      * without newlines or whitespace, to the supplied Writer.
      *
+     * @throws IOException if there are errors writing to the Writer
      * @see #toJSON() for a variant that returns a String
      * @see #toString() for a human-readable representation
-     * @throws IOException if there are errors writing to the Writer
      */
     public void toJSON(Writer writer) throws IOException {
         printJSON(writer, isArray() ? array() : object(), 0, false);
@@ -207,7 +206,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
             printObject(sb, (Map<String, Object>) obj, depth, pretty);
         } else if (obj instanceof String) {
             sb.append("\"");
-            printEscapedString(sb, (String)obj);
+            printEscapedString(sb, (String) obj);
             sb.append("\"");
         } else if (obj != null) {
             sb.append(obj.toString());
@@ -368,7 +367,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
      * recursive descent into the object / array hierarchy.
      *
      * @param key the key for the current object node whose value
-     * is to be retrieved
+     *            is to be retrieved
      * @return child node if found, an empty OBJECT node otherwise
      */
     public JSONDocument get(String key) {
@@ -388,7 +387,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
      * recursive descent into the object / array hierarchy.
      *
      * @param index the index for the current array node at which the node
-     * is to be retrieved
+     *              is to be retrieved
      * @return child node if found, an empty ARRAY node otherwise
      */
     public JSONDocument get(int index) {
@@ -407,7 +406,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
      * not found, or if the specified child is not an object.
      *
      * @param key the key for the current object node whose value
-     * is to be retrieved
+     *            is to be retrieved
      * @return child node if found, an empty OBJECT node otherwise
      */
     public Map<String, Object> getMap(String key) {
@@ -424,7 +423,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
      * not found, or if the specified child is not an object.
      *
      * @param index the index for the current array node at which the node
-     * is to be retrieved
+     *              is to be retrieved
      * @return child node if found, an empty OBJECT node otherwise
      */
     public Map<String, Object> getMap(int index) {
@@ -441,7 +440,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
      * not found, or if the specified child is not an array.
      *
      * @param key the key for the current object node whose value
-     * is to be retrieved
+     *            is to be retrieved
      * @return child node if found, an empty ARRAY node otherwise
      */
     public List<Object> getList(String key) {
@@ -458,7 +457,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
      * not found, or if the specified child is not an array.
      *
      * @param index the index for the current array node at which the node
-     * is to be retrieved
+     *              is to be retrieved
      * @return child node if found, an empty ARRAY node otherwise
      */
     public List<Object> getList(int index) {
@@ -592,7 +591,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set child object of this node.
      *
-     * @param key the repo of the child
+     * @param key   the repo of the child
      * @param value the node containing the new values
      * @return the old value, null if there was no value
      */
@@ -614,7 +613,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set value of this node as String.
      *
-     * @param key the repo of the value
+     * @param key   the repo of the value
      * @param value the new value
      * @return the old value, null if there was no value
      */
@@ -636,7 +635,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set value of this node as Boolean.
      *
-     * @param key the repo of the value
+     * @param key   the repo of the value
      * @param value the new value
      * @return the old value, null if there was no value
      */
@@ -658,7 +657,7 @@ public class JSONDocument implements Iterable<JSONDocument> {
     /**
      * Set value of this node as Number.
      *
-     * @param key the repo of the value
+     * @param key   the repo of the value
      * @param value the new value
      * @return the old value, null if there was no value
      */
@@ -722,33 +721,33 @@ public class JSONDocument implements Iterable<JSONDocument> {
         return null;
     }
 
-   static class IteratorWrapper implements Iterator<JSONDocument> {
+    static class IteratorWrapper implements Iterator<JSONDocument> {
 
-       final Iterator<Object> iterator;
+        final Iterator<Object> iterator;
 
-       IteratorWrapper(final Iterator<Object> iterator) {
-           this.iterator = iterator;
-       }
+        IteratorWrapper(final Iterator<Object> iterator) {
+            this.iterator = iterator;
+        }
 
-       @Override
-       public void remove() {
-           iterator.remove();
-       }
+        @Override
+        public void remove() {
+            iterator.remove();
+        }
 
-       @Override
-       public JSONDocument next() {
-           final Object value = iterator.next();
-           if (value instanceof JSONDocument) {
-               return (JSONDocument) value;
-           }
-           return null;
-       }
+        @Override
+        public JSONDocument next() {
+            final Object value = iterator.next();
+            if (value instanceof JSONDocument) {
+                return (JSONDocument) value;
+            }
+            return null;
+        }
 
-       @Override
-       public boolean hasNext() {
-           return iterator.hasNext();
-       }
-   }
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+    }
 
     @Override
     public IteratorWrapper iterator() {

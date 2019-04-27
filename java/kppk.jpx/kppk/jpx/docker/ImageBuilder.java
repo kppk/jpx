@@ -1,6 +1,5 @@
 package kppk.jpx.docker;
 
-import kppk.jpx.sys.ConsolePrinter;
 import kppk.jpx.sys.Executor;
 import kppk.jpx.sys.SysCommand;
 
@@ -10,7 +9,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 /**
- * TODO: Document this
+ * Builds docker images, can also minimize them using `smith`.
  */
 public final class ImageBuilder {
 

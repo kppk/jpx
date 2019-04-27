@@ -53,7 +53,7 @@ public class JSONStreamReaderImpl implements JSONReader {
         try {
             scanner = new JSONScanner(reader);
             JSONSymbol.init(scanner);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new JSONException(e, scanner.line(), scanner.column());
         }
     }
@@ -67,8 +67,9 @@ public class JSONStreamReaderImpl implements JSONReader {
      * Skips until the specified object is found at the specified depth.
      * If depth is negative, find the first occurrence of the specified object.
      * If objectName is null, skip until the specified depth is reached.
+     *
      * @param objectName the repo of the object to find, may be null
-     * @param depth stop at the first element at this depth, ignored if negative
+     * @param depth      stop at the first element at this depth, ignored if negative
      * @return the event at which this method stops, EventType.END_DOCUMENT if not found
      * @throws JSONException in case of parse errors
      */
@@ -109,7 +110,7 @@ public class JSONStreamReaderImpl implements JSONReader {
         boolean found = false;
 
         if (eod) {
-           return currentEvent = EventType.END_DOCUMENT;
+            return currentEvent = EventType.END_DOCUMENT;
         }
 
         nullValue = false;
@@ -117,11 +118,11 @@ public class JSONStreamReaderImpl implements JSONReader {
         while (!found) {
             try {
                 currentSymbol = JSONSymbol.next();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 throw new JSONException(e, scanner.line(), scanner.column());
             }
 
-            switch(currentSymbol) {
+            switch (currentSymbol) {
                 case O:    //start object
                     key = null;
                     depth++;
@@ -255,9 +256,9 @@ public class JSONStreamReaderImpl implements JSONReader {
         if (currentEvent != EventType.START_ARRAY && currentEvent != EventType.START_OBJECT) {
             // skip to start of array or object in order to start building
             for (EventType type = next();
-                type != EventType.END_DOCUMENT && type != EventType.ERROR &&
-                type != EventType.START_ARRAY && type != EventType.START_OBJECT;
-                type = next()) {
+                 type != EventType.END_DOCUMENT && type != EventType.ERROR &&
+                         type != EventType.START_ARRAY && type != EventType.START_OBJECT;
+                 type = next()) {
             }
         }
         final Stack<JSONDocument> collectionStack = new Stack<JSONDocument>();
@@ -273,8 +274,8 @@ public class JSONStreamReaderImpl implements JSONReader {
         }
         final JSONDocument root = collectionStack.push(collection);
         for (EventType type = next();
-            type != EventType.END_DOCUMENT && type != EventType.ERROR && !collectionStack.empty();
-            type = next()) {
+             type != EventType.END_DOCUMENT && type != EventType.ERROR && !collectionStack.empty();
+             type = next()) {
             insert(type, collectionStack);
         }
         return root;

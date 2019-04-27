@@ -37,8 +37,8 @@ public class JSONException extends RuntimeException {
     /**
      * Construct an exception with the exception, line and column number.
      *
-     * @param cause - the cause of the error
-     * @param line - the line number of the error
+     * @param cause  - the cause of the error
+     * @param line   - the line number of the error
      * @param column - the column number of the error
      */
     public JSONException(Throwable cause, int line, int column) {
@@ -51,8 +51,8 @@ public class JSONException extends RuntimeException {
      * Construct an exception with the message, line and column number.
      *
      * @param message - the message to report
-     * @param line - the line number of the error
-     * @param column - the column number of the error
+     * @param line    - the line number of the error
+     * @param column  - the column number of the error
      */
     public JSONException(String message, int line, int column) {
         super(message);

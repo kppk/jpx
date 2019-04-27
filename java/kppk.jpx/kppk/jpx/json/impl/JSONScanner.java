@@ -39,7 +39,7 @@ final class JSONScanner {
     private Reader reader;
     private String value;
     private int prevChar;
-    private int x,  y = 1;
+    private int x, y = 1;
 
     @SuppressWarnings("unused")
     private int checkpointX;
@@ -59,18 +59,18 @@ final class JSONScanner {
         int ch = prevChar;
         JSONSymbol s;
 
-    /*
-     * space character ' ' (0x20),
-     * tab character (hex 0x09),
-     * form feed character (hex 0x0c),
-     * line separators characters newline (hex 0x0a)
-     * carriage return (hex 0x0d)
-     */
+        /*
+         * space character ' ' (0x20),
+         * tab character (hex 0x09),
+         * form feed character (hex 0x0c),
+         * line separators characters newline (hex 0x0a)
+         * carriage return (hex 0x0d)
+         */
 
         // strip witespace
         while (ch != -1 && (ch == 0x20 ||
-               ch == 0x09 || ch == 0x0c ||
-               ch == 0x0a || ch == 0x0d)) {
+                ch == 0x09 || ch == 0x0c ||
+                ch == 0x0a || ch == 0x0d)) {
             ch = readChar(true);
         }
 
@@ -145,7 +145,7 @@ final class JSONScanner {
         int i = 1;
         int ch = 0; /* to satisfy compiler. not needed actually */
 
-        for (; i < text.length() && (ch = readChar(false)) == text.charAt(i); i++);
+        for (; i < text.length() && (ch = readChar(false)) == text.charAt(i); i++) ;
 
         if (i < text.length()) {
             Object[] args = {(char) ch};
@@ -166,60 +166,59 @@ final class JSONScanner {
             switch (ch) {
                 case -1:
                     throw new JSONException(JSONMessages.localize(null, "unexpected_end_of_stream"), line(), column());
-                case '\\':
-                     {
-                        int ch2 = readChar(false);
-                        switch (ch2) {
-                            case '"':
-                            case '\\':
-                            case '/':
-                                val.append((char) ch2);
-                                break;
-                            case 'b':
-                                val.append('\b');
-                                break;
-                            case 'f':
-                                val.append('\f');
-                                break;
-                            case 'n':
-                                val.append('\n');
-                                break;
-                            case 'r':
-                                val.append('\r');
-                                break;
-                            case 't':
-                                val.append('\t');
-                                break;
-                            case 'u': {
-                                char unicode = 0;
-                                for (int i = 4; --i >= 0;) {
-                                    ch2 = readChar(false);
-                                    unicode <<= 4;
-                                    if (ch2 >= '0' && ch2 <= '9') {
-                                        unicode |= ((char) ch2) - '0';
-                                    } else if (ch2 >= 'a' && ch2 <= 'f') {
-                                        unicode |= (((char) ch2) - 'a') + 0xA;
-                                    } else if (ch2 >= 'A' && ch2 <= 'F') {
-                                        unicode |= (((char) ch2) - 'A') + 0xA;
-                                    } else {
-                                        Object[] args = {(char) ch2};
-                                        throw new JSONException(JSONMessages.localize(args, "unexpected_char"), line(), column());
-                                    }
+                case '\\': {
+                    int ch2 = readChar(false);
+                    switch (ch2) {
+                        case '"':
+                        case '\\':
+                        case '/':
+                            val.append((char) ch2);
+                            break;
+                        case 'b':
+                            val.append('\b');
+                            break;
+                        case 'f':
+                            val.append('\f');
+                            break;
+                        case 'n':
+                            val.append('\n');
+                            break;
+                        case 'r':
+                            val.append('\r');
+                            break;
+                        case 't':
+                            val.append('\t');
+                            break;
+                        case 'u': {
+                            char unicode = 0;
+                            for (int i = 4; --i >= 0; ) {
+                                ch2 = readChar(false);
+                                unicode <<= 4;
+                                if (ch2 >= '0' && ch2 <= '9') {
+                                    unicode |= ((char) ch2) - '0';
+                                } else if (ch2 >= 'a' && ch2 <= 'f') {
+                                    unicode |= (((char) ch2) - 'a') + 0xA;
+                                } else if (ch2 >= 'A' && ch2 <= 'F') {
+                                    unicode |= (((char) ch2) - 'A') + 0xA;
+                                } else {
+                                    Object[] args = {(char) ch2};
+                                    throw new JSONException(JSONMessages.localize(args, "unexpected_char"), line(), column());
                                 }
-                                val.append((char) (unicode & 0xffff));
-                                break;
                             }
-                            default:
-                                Object[] args = {(char) ch2};
-                                throw new JSONException(JSONMessages.localize(args, "unexpected_char"), line(), column());
+                            val.append((char) (unicode & 0xffff));
+                            break;
                         }
+                        default:
+                            Object[] args = {(char) ch2};
+                            throw new JSONException(JSONMessages.localize(args, "unexpected_char"), line(), column());
                     }
-                    break;
+                }
+                break;
                 case '"':
                     break;
                 default:
                     if ((ch >= 0x0000 && ch <= 0x001F) ||
-                        (ch >= 0x007F && ch <= 0x009F)) {
+                            (ch >= 0x007F && ch <= 0x009F)) {
                         throw new JSONException(JSONMessages.localize(null, "control_character_in_string"), line(), column());
                     }
                     val.append((char) ch);
@@ -341,6 +340,6 @@ final class JSONScanner {
     @Override
     public String toString() {
         return y + ":" + x +
-            (offset >= 0 ? "@" + offset:"");
+                (offset >= 0 ? "@" + offset : "");
     }
 }

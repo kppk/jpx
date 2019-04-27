@@ -10,7 +10,7 @@ import java.nio.file.Path;
 /**
  * Test of {@link GitHubResolver}.
  */
- public final class GitHubResolverTest {
+public final class GitHubResolverTest {
 
     public static void main(String[] args) {
         testGetModuleDescriptor();

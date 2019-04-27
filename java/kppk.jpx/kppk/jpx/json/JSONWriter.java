@@ -36,7 +36,7 @@ import java.util.Stack;
 
 /**
  * Class for writing a JSON document.
- *
+ * <p>
  * An example of how to write a simple JSON document.
  * <pre>
  * JSONFactory FACTORY = JSONFactory.instance();
@@ -69,11 +69,12 @@ import java.util.Stack;
 
 public class JSONWriter {
 
-    private enum ContainerType { ARRAY, OBJECT }
+    private enum ContainerType {ARRAY, OBJECT}
 
     private static class Container {
         ContainerType type;
         boolean first;
+
         Container(ContainerType type) {
             this.type = type;
             this.first = true;
@@ -176,10 +177,10 @@ public class JSONWriter {
     /**
      * Writes a repo/value pair for a JSON object.
      *
-     * @param key - the repo of the JSON object.
+     * @param key   - the repo of the JSON object.
      * @param value - the value of the JSON object.
-     * The value may be a Map, in which case entries in the Map
-     * are written as elements of the current JSON Object.
+     *              The value may be a Map, in which case entries in the Map
+     *              are written as elements of the current JSON Object.
      * @throws IOException if an I/O error occurs.
      */
     public JSONWriter objectValue(String key, Object value) throws IOException {
@@ -197,8 +198,8 @@ public class JSONWriter {
      * Writes a value into a JSON array.
      *
      * @param value - the value of an array element.
-     * The value may be a List, in which case elements of the List
-     * are written as elements of the current JSON array.
+     *              The value may be a List, in which case elements of the List
+     *              are written as elements of the current JSON array.
      * @throws IOException if an I/O error occurs.
      */
     public JSONWriter arrayValue(Object value) throws IOException {
@@ -261,7 +262,7 @@ public class JSONWriter {
         writer.close();
     }
 
-    @SuppressWarnings({"rawtypes","unchecked"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void writeValue(Object value) throws IOException {
         if (value == null) {
             writer.write("null");

@@ -106,10 +106,10 @@ enum JSONSymbol {
     private static Stack<JSONSymbol> stack;
     private static JSONSymbol terminal;
     private static JSONSymbol current;
-    private static JSONScanner       scanner;
-    private static String            value;
+    private static JSONScanner scanner;
+    private static String value;
 
-    static void init(JSONScanner js) throws JSONException, IOException  {
+    static void init(JSONScanner js) throws JSONException, IOException {
         scanner = js;
         stack = new Stack<JSONSymbol>();
 
@@ -157,7 +157,7 @@ enum JSONSymbol {
             }
             stack.push(current.markerSymbol);
 
-            for (int i = target.length; --i >= 0;) {
+            for (int i = target.length; --i >= 0; ) {
                 final JSONSymbol s = target[i];
 
                 if (DEBUG) {
