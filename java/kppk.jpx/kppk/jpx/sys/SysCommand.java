@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * TODO: Document this
+ * Helper class to build executable commands.
  */
 public final class SysCommand {
     public final String command;

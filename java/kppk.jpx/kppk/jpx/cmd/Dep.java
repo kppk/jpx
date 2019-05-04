@@ -16,7 +16,7 @@ import java.util.List;
 import static kppk.jpx.Main.handleCommon;
 
 /**
- * Dependencies related actions.
+ * `install` cli command - install dependencies to the current project directory.
  */
 public final class Dep {
 
@@ -34,26 +34,27 @@ public final class Dep {
         Path current = Paths.get(".");
         Manifest mf = Manifest.readFrom(current);
 
-        ConsolePrinter.info(() -> String.format("Installing dependencies for %s (%s)",
-                mf.pack.name, Paths.get(mf.basedir).toAbsolutePath()));
+        ConsolePrinter.infoWithProgress(
+                () -> String.format("Installing dependencies for %s (%s)",
+                        mf.pack.name, Paths.get(mf.basedir).toAbsolutePath()),
+                () -> {
+                    Graph graph = Graph.from(JavaProject.createNew(mf));
+                    List<Dependency> dependencies = graph.flatten();
 
-        Graph graph = Graph.from(JavaProject.createNew(mf));
-        List<Dependency> dependencies = graph.flatten();
+                    Path lib = current.resolve("lib");
+                    try {
+                        if (!Files.exists(lib)) {
+                            Files.createDirectory(lib);
+                        }
+                    } catch (IOException e) {
+                        throw new IllegalStateException(e);
+                    }
 
-        Path lib = current.resolve("lib");
-        try {
-            if (!Files.exists(lib)) {
-                Files.createDirectory(lib);
-            }
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+                    dependencies.stream()
+                            .filter(d -> d.resolver != null)
+                            .forEach(dependency -> dependency.resolver.fetch(dependency.version, lib));
 
-        dependencies.stream()
-                .filter(d -> d.resolver != null)
-                .forEach(dependency -> dependency.resolver.fetch(dependency.version, lib));
+                });
 
-
-        ConsolePrinter.info(() -> "Finished");
     }
 }

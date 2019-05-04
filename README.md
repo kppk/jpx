@@ -15,7 +15,38 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
 ### General
 
     - heavily inspired by Rust's cargo, npm (yarn) and elm-package
-    - build on top of GRAAL and latest jdk features (native, modules, linking, jshell, jfr, etc)
+    - build on top of GRAAL as native binary
+    - works with java 9+
+    - java module centric, dependencies are defined in `module-info.java` only
+    - github support only currently
+
+### Getting started
+
+install:
+
+`curl -LSs https://raw.githubusercontent.com/kppk/jpx/master/install.sh | sh`
+
+add jpx to your PATH:
+
+`export PATH=~/.jpx/bin:$PATH`
+
+create new binary project:
+
+`jpx new myorg/myrepo --bin`
+
+`myorg` is your github organization (username)
+`myrepo` is your github repository
+
+build your new project:
+
+```bash
+cd myorg/myrepo
+jpx install  ## install dependencies to ./lib
+jpx build
+```
+
+
+    
 
 ### What is a jpx pack
 
@@ -58,10 +89,6 @@ Note: Because 'package' has special meaning in java, it uses word 'pack' -> java
 
     - possible artifact: application -> native (graal or jlink)
     - allow application installation from repository (download source, build to ~/.jpx/bin), jpx install
-
-### INSTALL
-
-`curl -LSs https://raw.githubusercontent.com/kppk/jpx/master/install.sh | sh`
 
 ### Commands
 

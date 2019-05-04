@@ -2,16 +2,32 @@ package kppk.jpx.sys;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
  * ConsolePrinter is used to print message to system out.
  */
 public final class ConsolePrinter {
+
+    public enum Color {
+        GREEN("\033[0;32m"),
+        YELLOW("\033[0;33m"),
+        RED("\033[0;31m");
+
+        private final String code;
+
+        Color(String code) {
+            this.code = code;
+        }
+
+        public String msg(String message) {
+            if (System.console() == null) {
+                return message;
+            }
+            return String.format("%s%s%s", code, message, "\033[0;0m");
+        }
+
+    }
 
     public static Verbosity level = Verbosity.INFO;
 
@@ -26,6 +42,9 @@ public final class ConsolePrinter {
         }
     }
 
+    // note: this might need to be atomic reference at some point
+    private static Spinner spinner = null;
+
     public static void error(Supplier<String> message) {
         println(Verbosity.ERROR, message);
     }
@@ -39,7 +58,7 @@ public final class ConsolePrinter {
                 exception.printStackTrace(printWriter);
                 details = "\n" + stringWriter.toString();
             }
-            return "ERROR: " + exception.getMessage() + details;
+            return Color.RED.msg("ERROR: ") + exception.getMessage() + details;
         });
     }
 
@@ -58,29 +77,35 @@ public final class ConsolePrinter {
 
     public static void printlnWithProgress(Verbosity level, Supplier<String> message, Runnable task) {
 
-        ScheduledExecutorService executor = null;
-        ScheduledFuture<?> future = null;
         if (ConsolePrinter.level.value <= level.value) {
-            System.out.print(message.get());
-            executor = Executors.newSingleThreadScheduledExecutor();
-            future = executor.scheduleWithFixedDelay(() -> System.out.print("."),
-                    1, 1, TimeUnit.SECONDS);
+            spinner = Spinner.newInstance(message.get());
         }
-        task.run();
-        if (future != null) {
-            future.cancel(true);
-            executor.shutdown();
+        try {
+            // execute the task
+            task.run();
+        } catch (RuntimeException e) {
+            if (ConsolePrinter.level.value <= level.value) {
+                spinner.error();
+                spinner = null;
+            }
+            throw e;
         }
-        if (ConsolePrinter.level.value <= level.value) {
-            System.out.println("Done");
+        if (ConsolePrinter.level.value <= level.value && spinner != null) {
+            spinner.done();
+            spinner = null;
         }
 
     }
 
     public static void println(Verbosity level, Supplier<String> message) {
         if (ConsolePrinter.level.value <= level.value) {
+            if (spinner != null) {
+                spinner.addMessage(message.get());
+                return;
+            }
             System.out.println(message.get());
         }
     }
+
 
 }

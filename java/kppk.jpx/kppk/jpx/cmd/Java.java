@@ -7,7 +7,7 @@ import kppk.jpx.jdk.JdkInstaller;
 import static kppk.jpx.Main.handleCommon;
 
 /**
- * TODO: Document this
+ * `java' cli command - downloads JDK release.
  */
 public final class Java {
 
@@ -20,10 +20,12 @@ public final class Java {
             .setName("java")
             .setUsage("Installs/Updates java development kit")
             .addFlag(FLAG_RELEASE)
-            .setExecutor(handleCommon.andThen(ctx -> JdkInstaller.getJavaHomeOrInstall(
-                    ctx.getFlagValue(FLAG_RELEASE)
-            )))
+            .setExecutor(handleCommon.andThen(ctx -> installJava(ctx.getFlagValue(FLAG_RELEASE))))
             .build();
+
+    private static void installJava(String release) {
+        JdkInstaller.getJavaHomeOrInstall(release);
+    }
 
 
 }

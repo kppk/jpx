@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import static kppk.jpx.Main.handleCommon;
 
 /**
- * TODO: Document this
+ * The `build` cli command is implemented here.
  */
 public final class Build {
 
@@ -46,7 +46,6 @@ public final class Build {
             )))
             .build();
 
-
     public static final Command CMD_CLEAN = Command.builder()
             .setName("clean")
             .setUsage("Remove the target directory")
@@ -59,24 +58,28 @@ public final class Build {
         Manifest manifest = Manifest.readFrom(Paths.get("."));
         //Graph graph = Graph.from(manifest);
 
-        ConsolePrinter.info(() -> String.format("Compiling %s v%s (%s)",
-                manifest.pack.name,
-                manifest.pack.version,
-                Paths.get(manifest.basedir).toAbsolutePath())
+        JavaProject project = JavaProject.createNew(manifest);
+        ConsolePrinter.infoWithProgress(
+                () -> String.format("Compiling %s v%s (%s)",
+                        manifest.pack.name,
+                        manifest.pack.version,
+                        Paths.get(manifest.basedir).toAbsolutePath()),
+                project::build
         );
 
-        JavaProject project = JavaProject.createNew(manifest)
-                .build();
-
         if (install) {
-            project.install();
+            ConsolePrinter.infoWithProgress(
+                    () -> String.format("Installing %s to ~/.jpx", manifest.pack.name),
+                    project::install
+            );
         }
 
         if (docker) {
-            project.buildDockerImage(minimize);
+            ConsolePrinter.infoWithProgress(
+                    () -> "Building docker image",
+                    () -> project.buildDockerImage(minimize)
+            );
         }
-
-        ConsolePrinter.info(() -> "Finished");
     }
 
     private static void clean() {

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * TODO: Document this
+ * Executes system commands.
  */
 public final class Executor {
 
@@ -33,11 +33,13 @@ public final class Executor {
                 ConsolePrinter.verbose(() -> "[Execute] " + args.stream().collect(Collectors.joining(" ")));
                 Process process = new ProcessBuilder(args)
                         .directory(baseDir.toFile())
-                        .redirectErrorStream(true)
                         .start();
                 int code = process.waitFor();
                 if (code != 0) {
-                    throw new IllegalStateException("SysCommand failed");
+                    try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                        String error = IOUtil.readAll(errorReader);
+                        throw new IllegalStateException(error);
+                    }
                 }
             }
         } catch (IOException | InterruptedException e) {
@@ -69,11 +71,13 @@ public final class Executor {
         try {
             Process process = new ProcessBuilder(args)
                     .directory(baseDir)
-                    .redirectErrorStream(true)
                     .start();
             int code = process.waitFor();
             if (code != 0) {
-                throw new IllegalStateException("SysCommand failed");
+                try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                    String error = IOUtil.readAll(errorReader);
+                    throw new IllegalStateException(error);
+                }
             }
             return new BufferedReader(new InputStreamReader(process.getInputStream()));
         } catch (IOException | InterruptedException e) {
