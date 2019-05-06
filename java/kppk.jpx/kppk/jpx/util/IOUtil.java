@@ -83,7 +83,17 @@ public final class IOUtil {
         }
     }
 
+    /**
+     * Counts SHA-256 of a directory, by traversing the directory and doing the following for each entry:
+     * <ul>
+     * <li>if the entry is directory and it is empty, ignore it, otherwise use it's relative path</li>
+     * <li>counting sha-256 of the file</li>
+     * </ul>
+     * <p>
+     * Then, it will count of the sha-256 of the list prepared in earlier step.
+     */
     public static String sha256dir(Path dir) {
+        Objects.requireNonNull(dir);
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             Files.walk(dir)
