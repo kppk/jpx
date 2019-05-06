@@ -78,7 +78,7 @@ final class AdoptOpenJdkProvider implements JdkProvider<AdoptOpenJdkProvider.Jdk
                 () -> {
                     Path downloaded = Curl.get(release.binaryLink);
                     String checksum = Curl.getAsString(release.checksum_link);
-                    String downloadedChecksum = IOUtil.sha256(downloaded);
+                    String downloadedChecksum = IOUtil.sha256file(downloaded);
                     if (!validChecksum(downloadedChecksum, checksum)) {
                         throw new IllegalStateException("Checksum of downloaded java archive doesn't match, try again");
                     }

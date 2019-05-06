@@ -12,9 +12,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
- * TODO: Document this
+ * Misc IO related utility functions.
  */
 public final class IOUtil {
     private IOUtil() {
@@ -67,7 +68,7 @@ public final class IOUtil {
         }
     }
 
-    public static String sha256(Path file) {
+    public static String sha256file(Path file) {
         Objects.requireNonNull(file);
         try (InputStream in = new BufferedInputStream(new FileInputStream(file.toFile()))) {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -79,6 +80,45 @@ public final class IOUtil {
             return printHexBinary(digest.digest());
         } catch (IOException | NoSuchAlgorithmException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    public static String sha256dir(Path dir) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            Files.walk(dir)
+                    .flatMap(path -> {
+                        String relative = dir.getParent().relativize(path).toString();
+                        if (Files.isDirectory(path)) {
+                            // if non-empty directory, include its relative name
+                            return isEmpty(path) ? Stream.empty() : Stream.of(relative);
+                        } else {
+                            return Stream.of(relative + ":" + sha256file(path));
+                        }
+                    })
+                    .sorted()
+                    .forEach(s -> digest.update(s.getBytes()));
+            return printHexBinary(digest.digest());
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static boolean isEmpty(Path dir) {
+        try {
+            return !Files.walk(dir).anyMatch(path -> !path.equals(dir));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static String sha256string(String str) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(str.getBytes());
+            return printHexBinary(digest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 
