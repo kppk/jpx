@@ -112,16 +112,6 @@ public final class IOUtil {
         }
     }
 
-    private static String sha256string(String str) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            digest.update(str.getBytes());
-            return printHexBinary(digest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
     private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
 
     public static String printHexBinary(byte[] data) {
